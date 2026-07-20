@@ -45,11 +45,11 @@ class ClientController extends BaseController
     {
         $db = \Config\Database::connect();
         $bareme = $db->table('bareme_frais')
-                     ->where('id_type_operation', $idTypeOperation)
-                     ->where('montant_min <=', $montant)
-                     ->where('montant_max >=', $montant)
-                     ->get()
-                     ->getRow();
+            ->where('id_type_operation', $idTypeOperation)
+            ->where('montant_min <=', $montant)
+            ->where('montant_max >=', $montant)
+            ->get()
+            ->getRow();
 
         return $bareme ? $bareme->frais : 0;
     }
@@ -100,7 +100,7 @@ class ClientController extends BaseController
         $client = $session->get('client');
         $montant = $this->request->getPost('montant');
         $description = $this->request->getPost('description');
-        $frais = $this->calculerFrais($montant, 2); 
+        $frais = $this->calculerFrais($montant, 2);
         $totalADebiter = $montant + $frais;
 
         if (!$client || !is_numeric($totalADebiter) || $totalADebiter <= 0) {
@@ -144,61 +144,79 @@ class ClientController extends BaseController
     public function processTransfert()
     {
         $session = session();
-        $client = $session->get('client');
-        $montant = $this->request->getPost('montant');
-        $numeroDestinataire = $this->request->getPost('destinataire');
+        $db = \Config\Database::connect();
+        $montant = (float)$this->request->getPost('montant');
+        $numDest = $this->request->getPost('destinataire');
         $description = $this->request->getPost('description');
-        $frais = $this->calculerFrais($montant, 3); 
-        $totalADebiter = $montant + $frais;
+        $inclureFrais = $this->request->getPost('inclure_frais_retrait') === 'on';
 
         $clientModel = new ClientModel();
-        $opModel = new OperationModel();
-        $db = \Config\Database::connect();
+        $expediteur = $clientModel->find(session()->get('client')['id']);
 
-        $expediteur = $clientModel->find($client['id']);
-        $destinataire = $clientModel->where('numero_telephone', $numeroDestinataire)->first(); 
+        $destinataire = $clientModel->where('numero_telephone', $numDest)->first();
 
-        if (!$destinataire) {
-            return redirect()->back()->with('error', 'Destinataire introuvable.');
+        $prefixesYas = session()->get('prefixes'); // ['033', '038']
+        $estClientYas = false;
+        foreach ($prefixesYas as $p) {
+            if (str_starts_with($numDest, $p)) {
+                $estClientYas = true;
+                break;
+            }
         }
+
+        $fraisTransfert = $this->calculerFrais($montant, 3);
+        $fraisRetrait = ($inclureFrais && $estClientYas) ? $this->calculerFrais($montant, 2) : 0; // ID 2 = retrait
+
+        $totalADebiter = $montant + $fraisTransfert + $fraisRetrait;
+
         if ($expediteur['solde'] < $totalADebiter) {
-            return redirect()->back()->with('error', 'Solde insuffisant.');
+            return redirect()->back()->with('error', 'Solde insuffisant. Total nécessaire : ' . number_format($totalADebiter, 0, ',', '.') . ' Ar');
         }
-        if ($expediteur['id'] == $destinataire['id']) {
+
+        if ($estClientYas && $destinataire && $expediteur['id'] == $destinataire['id']) {
             return redirect()->back()->with('error', 'Impossible de s\'envoyer à soi-même.');
         }
 
-        $destinataireNumero = $destinataire['numero_telephone'];
-
+        $opModel = new OperationModel();
         $db->transStart();
 
-        // 2. Débit expéditeur
         $clientModel->update($expediteur['id'], ['solde' => $expediteur['solde'] - $totalADebiter]);
-        // 3. Crédit destinataire
-        $clientModel->update($destinataire['id'], ['solde' => $destinataire['solde'] + $montant]);
 
-        $defaultDescription = 'Transfert vers ' . $destinataireNumero;
-        if (!empty($destinataire['prenom']) && !empty($destinataire['nom'])) {
-            $defaultDescription = 'Transfert vers ' . $destinataire['prenom'] . ' ' . $destinataire['nom'] . ' (' . $destinataireNumero . ')';
+        if ($estClientYas && $destinataire) {
+            $clientModel->update($destinataire['id'], ['solde' => $destinataire['solde'] + $montant]);
+            $destinataireNumero = $destinataire['numero_telephone'];
+            $destinataireNom = $destinataire['prenom'] . ' ' . $destinataire['nom'];
+        } else {
+            $destinataireNumero = $numDest;
+            $destinataireNom = 'Externe (' . $numDest . ')';
         }
 
+        $defaultDescription = $estClientYas
+            ? 'Transfert vers ' . $destinataireNom . ' (' . $destinataireNumero . ')'
+            : 'Transfert externe vers ' . $destinataireNumero;
+
         $opModel->save([
-            'id_client1'       => $expediteur['id'],
-            'id_client2'       => $destinataire['id'], 
-            'id_type_operation' => 3, 
-            'date_operation'   => date('Y-m-d H:i:s'),
-            'montant'          => $montant,
-            'frais_applique'   => $frais,
-            'description'      => !empty($description) ? $description : $defaultDescription
+            'id_client1'        => $expediteur['id'],
+            'id_client2'        => $estClientYas && $destinataire ? $destinataire['id'] : null,
+            'id_type_operation' => 3, // ID 3 = transfert
+            'date_operation'    => date('Y-m-d H:i:s'),
+            'montant'           => $montant,
+            'frais_applique'    => $fraisTransfert + $fraisRetrait,
+            'description'       => !empty($description) ? $description : $defaultDescription
         ]);
 
         $db->transComplete();
 
         if ($db->transStatus() === false) {
-            return redirect()->back()->with('error', 'Erreur transfert.');
+            return redirect()->back()->with('error', 'Erreur lors du transfert.');
         }
 
         $session->set('client', $clientModel->find($expediteur['id']));
-        return redirect()->to('/client/home')->with('success', 'Transfert vers ' . $destinataireNumero . ' réussi.');
+
+        $message = $estClientYas
+            ? 'Transfert vers ' . $destinataireNom . ' réussi.'
+            : 'Transfert externe vers ' . $destinataireNumero . ' effectué.';
+
+        return redirect()->to('/client/home')->with('success', $message);
     }
 }

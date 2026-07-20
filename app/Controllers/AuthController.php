@@ -27,6 +27,8 @@ class AuthController extends BaseController
             $client = $model->getByNumero($numero);
             $session->set('client', $client);
             $session->set('role','client');
+            $prefixeModel = new \App\Models\PrefixeModel();
+            session()->set('prefixes', array_column($prefixeModel->getPrefixesByOperateur(1), 'valeur'));
             return redirect()->to('/client/home')->with('success', 'Bienvenue !');
         } else {
             return redirect()->back()->with('error', 'Numéro non reconnu.');
