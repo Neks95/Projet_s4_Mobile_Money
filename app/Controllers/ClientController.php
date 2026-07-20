@@ -122,4 +122,32 @@ class ClientController extends BaseController
         $session->set('client', $clientModel->find($clientInfo['id']));
         return redirect()->to('/client/home')->with('success', 'Retrait effectué avec succès.');
     }
+
+    public function situationClients()
+    {
+        $db = \Config\Database::connect();
+
+        // Récupération des clients avec leur préfixe et le nom de leur opérateur
+        $builder = $db->table('client');
+        $builder->select('client.*, prefixe.Valeur as code_prefixe, operateur.nom as nom_operateur');
+        $builder->join('prefixe', 'prefixe.id = client.id_prefixe', 'left');
+        $builder->join('operateur', 'operateur.id = prefixe.id_operateur', 'left');
+        $builder->orderBy('client.nom', 'ASC');
+        
+        $clients = $builder->get()->getResultArray();
+
+        // Calcul des métriques globales
+        $totalSoldes = 0;
+        foreach ($clients as $c) {
+            $totalSoldes += (float) $c['solde'];
+        }
+
+        $data = [
+            'clients'       => $clients,
+            'total_soldes'  => $totalSoldes,
+            'total_clients' => count($clients)
+        ];
+
+        return view('situation_clients', $data);
+    }
 }
