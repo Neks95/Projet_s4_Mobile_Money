@@ -5,5 +5,5 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
-$routes->get('/etudiants','Etudiant::liste');
+$routes->get('/operateur', 'OperateurController::index');
+
