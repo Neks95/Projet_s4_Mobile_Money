@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Models\ClientModel;
 use App\Models\OperationModel;
 
-
 class ClientController extends BaseController
 {
     public function getHome()
@@ -17,11 +16,10 @@ class ClientController extends BaseController
         $opModel = new OperationModel();
 
         $clientInfo = $clientModel->find($client['id']);
-
         $activites = $opModel->getRecentes($client['id']);
 
         return view('accueil', [
-            'client' => $clientInfo,
+            'client'    => $clientInfo,
             'activites' => $activites
         ]);
     }
@@ -45,13 +43,13 @@ class ClientController extends BaseController
     {
         $db = \Config\Database::connect();
         $bareme = $db->table('bareme_frais')
-                     ->where('id_type_operation', $idTypeOperation)
-                     ->where('montant_min <=', $montant)
-                     ->where('montant_max >=', $montant)
-                     ->get()
-                     ->getRow();
+            ->where('id_type_operation', $idTypeOperation)
+            ->where('montant_min <=', $montant)
+            ->where('montant_max >=', $montant)
+            ->get()
+            ->getRow();
 
-        return $bareme ? $bareme->frais : 0;
+        return $bareme ? (float)$bareme->frais : 0.0;
     }
 
     public function processDepot()
@@ -62,7 +60,7 @@ class ClientController extends BaseController
         $description = $this->request->getPost('description');
 
         if (!$client || !is_numeric($montant) || $montant <= 0) {
-            return redirect()->back()->with('error', 'Données invalides.');
+            return redirect()->back()->with('error', 'Donnees invalides.');
         }
 
         $clientModel = new ClientModel();
@@ -75,23 +73,23 @@ class ClientController extends BaseController
         $clientModel->update($clientInfo['id'], ['solde' => $clientInfo['solde'] + $montant]);
 
         $opModel->save([
-            'id_client1'       => $clientInfo['id'],
-            'id_client2'       => $clientInfo['id'],
+            'id_client1'        => $clientInfo['id'],
+            'id_client2'        => $clientInfo['id'],
             'id_type_operation' => 1,
-            'date_operation'   => date('Y-m-d H:i:s'),
-            'montant'          => $montant,
-            'frais_applique'   => 0,
-            'description'      => !empty($description) ? $description : 'Dépôt en espèces'
+            'date_operation'    => date('Y-m-d H:i:s'),
+            'montant'           => $montant,
+            'frais_applique'    => 0,
+            'description'       => !empty($description) ? $description : 'Depot en especes'
         ]);
 
         $db->transComplete();
 
         if ($db->transStatus() === false) {
-            return redirect()->back()->with('error', 'Erreur lors du dépôt.');
+            return redirect()->back()->with('error', 'Erreur lors du depot.');
         }
 
         $session->set('client', $clientModel->find($clientInfo['id']));
-        return redirect()->to('/client/home')->with('success', 'Dépôt effectué avec succès.');
+        return redirect()->to('/client/home')->with('success', 'Depot effectue avec succes.');
     }
 
     public function processRetrait()
@@ -100,11 +98,11 @@ class ClientController extends BaseController
         $client = $session->get('client');
         $montant = $this->request->getPost('montant');
         $description = $this->request->getPost('description');
-        $frais = $this->calculerFrais($montant, 2); 
+        $frais = $this->calculerFrais($montant, 2);
         $totalADebiter = $montant + $frais;
 
         if (!$client || !is_numeric($totalADebiter) || $totalADebiter <= 0) {
-            return redirect()->back()->with('error', 'Données invalides.');
+            return redirect()->back()->with('error', 'Donnees invalides.');
         }
 
         $clientModel = new ClientModel();
@@ -122,13 +120,13 @@ class ClientController extends BaseController
         $clientModel->update($clientInfo['id'], ['solde' => $clientInfo['solde'] - $totalADebiter]);
 
         $opModel->save([
-            'id_client1'       => $clientInfo['id'],
-            'id_client2'       => $clientInfo['id'],
+            'id_client1'        => $clientInfo['id'],
+            'id_client2'        => $clientInfo['id'],
             'id_type_operation' => 2,
-            'date_operation'   => date('Y-m-d H:i:s'),
-            'montant'          => $montant,
-            'frais_applique'   => $frais,
-            'description'      => !empty($description) ? $description : 'Retrait en espèces'
+            'date_operation'    => date('Y-m-d H:i:s'),
+            'montant'           => $montant,
+            'frais_applique'    => $frais,
+            'description'       => !empty($description) ? $description : 'Retrait en especes'
         ]);
 
         $db->transComplete();
@@ -138,23 +136,97 @@ class ClientController extends BaseController
         }
 
         $session->set('client', $clientModel->find($clientInfo['id']));
-        return redirect()->to('/client/home')->with('success', 'Retrait effectué avec succès.');
+        return redirect()->to('/client/home')->with('success', 'Retrait effectue avec succes.');
+    }
+
+    public function processTransfert()
+    {
+        $session = session();
+        $db = \Config\Database::connect();
+        $montant = (float)$this->request->getPost('montant');
+        $numDest = $this->request->getPost('destinataire');
+        $description = $this->request->getPost('description');
+        $inclureFrais = $this->request->getPost('inclure_frais_retrait') === 'on';
+
+        $clientModel = new ClientModel();
+        $expediteur = $clientModel->find(session()->get('client')['id']);
+
+        $destinataire = $clientModel->where('numero_telephone', $numDest)->first();
+
+        $prefixesYas = session()->get('prefixes');
+        $estClientYas = false;
+        if (is_array($prefixesYas)) {
+            foreach ($prefixesYas as $p) {
+                if (str_starts_with($numDest, $p)) {
+                    $estClientYas = true;
+                    break;
+                }
+            }
+        }
+
+        $fraisTransfert = $this->calculerFrais($montant, 3);
+        $fraisRetrait = ($inclureFrais && $estClientYas) ? $this->calculerFrais($montant, 2) : 0;
+
+        $totalADebiter = $montant + $fraisTransfert + $fraisRetrait;
+
+        if ($expediteur['solde'] < $totalADebiter) {
+            return redirect()->back()->with('error', 'Solde insuffisant. Total necessaire : ' . number_format($totalADebiter, 0, ',', '.') . ' Ar');
+        }
+
+        if ($estClientYas && $destinataire && $expediteur['id'] == $destinataire['id']) {
+            return redirect()->back()->with('error', 'Impossible de s\'envoyer a soi-meme.');
+        }
+
+        $opModel = new OperationModel();
+        $db->transStart();
+
+        $clientModel->update($expediteur['id'], ['solde' => $expediteur['solde'] - $totalADebiter]);
+
+        if ($estClientYas && $destinataire) {
+            $clientModel->update($destinataire['id'], ['solde' => $destinataire['solde'] + $montant]);
+            $destinataireNom = $destinataire['prenom'] . ' ' . $destinataire['nom'];
+        } else {
+            $destinataireNom = 'Externe (' . $numDest . ')';
+        }
+
+        $opModel->save([
+            'id_client1'          => $expediteur['id'],
+            'id_client2'          => $estClientYas && $destinataire ? $destinataire['id'] : null,
+            'id_type_operation'   => 3, 
+            'date_operation'      => date('Y-m-d H:i:s'),
+            'montant'             => $montant,
+            'frais_applique'      => $fraisTransfert + $fraisRetrait,
+            'description'         => $description,
+            'numero_destinataire' => $numDest
+        ]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Erreur lors du transfert.');
+        }
+
+        $session->set('client', $clientModel->find($expediteur['id']));
+
+        $message = $estClientYas
+            ? 'Transfert vers ' . $destinataireNom . ' reussi.'
+            : 'Transfert externe vers ' . $numDest . ' effectue.';
+
+        return redirect()->to('/client/home')->with('success', $message);
     }
 
     public function situationClients()
     {
         $db = \Config\Database::connect();
 
-        // Récupération des clients avec leur préfixe et le nom de leur opérateur
         $builder = $db->table('client');
         $builder->select('client.*, prefixe.Valeur as code_prefixe, operateur.nom as nom_operateur');
         $builder->join('prefixe', 'prefixe.id = client.id_prefixe', 'left');
         $builder->join('operateur', 'operateur.id = prefixe.id_operateur', 'left');
         $builder->orderBy('client.nom', 'ASC');
-        
+
         $clients = $builder->get()->getResultArray();
 
-        // Calcul des métriques globales
         $totalSoldes = 0;
         foreach ($clients as $c) {
             $totalSoldes += (float) $c['solde'];

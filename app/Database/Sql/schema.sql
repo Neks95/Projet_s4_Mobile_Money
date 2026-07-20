@@ -49,3 +49,10 @@ CREATE TABLE operation(
     FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
 );
 
+CREATE TABLE conf_transfert(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_operateur INTEGER,
+    comission REAL,
+    FOREIGN KEY (id_operateur) REFERENCES operateur(id)
+);
+
