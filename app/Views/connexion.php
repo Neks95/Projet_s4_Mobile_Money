@@ -24,18 +24,25 @@
             </div>
             <div class="bg-surface-container rounded-xl p-md shadow-sm w-full border border-outline-variant/30">
                 <h1 class="font-title-md text-title-md mb-md text-on-surface">Bienvenue</h1>
-                <form action="<?= base_url('connexion') ?>" class="space-y-md" id="login-form" method="post">
-                    <?php if (function_exists('csrf_field')): ?>
-                        <?= csrf_field() ?>
-                    <?php endif; ?>
+                <!-- Modifie l'action et le name de l'input -->
+                <!-- AJOUTE CE BLOC POUR LES MESSAGES -->
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="mb-md p-sm bg-error-container/20 text-error rounded-lg text-xs">
+                        <?= session()->getFlashdata('error') ?>
+                    </div>
+                <?php endif; ?>
+                <form action="<?= base_url('login') ?>" class="space-y-md" id="login-form" method="post">
+                    <?= csrf_field() ?>
+
                     <div class="relative">
                         <label class="block text-xs font-bold text-outline mb-base uppercase tracking-wider" for="phone">Numéro de téléphone</label>
                         <div class="flex items-center border-b-2 border-outline-variant focus-within:border-primary transition-all pb-base">
-                            <span class="text-on-surface-variant font-numeric-data text-numeric-data pr-xs">+261</span>
-                            <input class="bg-transparent border-none focus:ring-0 w-full font-numeric-data text-numeric-data p-0 placeholder:text-outline-variant/50" id="phone" maxlength="9" name="phone" placeholder="3x xx xxx xx" required="" type="tel" />
+                            <input class="bg-transparent border-none focus:ring-0 w-full font-numeric-data text-numeric-data p-0"
+                                id="phone" maxlength="10" name="numero_telephone" placeholder="0330000000" required type="tel" />
                         </div>
-                        <p class="text-error text-xs mt-base hidden" id="phone-error">Veuillez saisir un numéro valide (Telma, Orange, Airtel).</p>
+                        <p class="text-error text-xs mt-base hidden" id="phone-error">Numéro invalide.</p>
                     </div>
+
                     <button class="w-full py-md bg-primary-container text-on-primary-container rounded-lg font-bold shadow-md hover:brightness-110 active:scale-95 transition-all" type="submit">
                         Se connecter
                     </button>
@@ -51,23 +58,17 @@
         </div>
     </div>
     <script>
-        // Validation côté client + redirection vers la page d'accueil.
-        // La validation réelle (authentification, session) doit être faite
-        // côté serveur (contrôleur CI4) ; ce script ne fait qu'une
-        // vérification de forme avant l'envoi du formulaire.
         document.getElementById('login-form').addEventListener('submit', function(e) {
             const phone = document.getElementById('phone').value;
-            const validPrefixes = ['32', '33', '34', '38'];
-            const prefix = phone.substring(0, 2);
+            const validPrefixes = ['032', '033', '034', '038'];
+            const prefix = phone.substring(0, 3);
             const error = document.getElementById('phone-error');
 
-            if (phone.length === 9 && validPrefixes.includes(prefix)) {
+            if (phone.length === 10 && validPrefixes.includes(prefix)) {
                 error.classList.add('hidden');
-                // Le formulaire est soumis normalement (POST) vers le
-                // contrôleur de connexion, qui redirigera ensuite vers
-                // la page d'accueil (accueil.php) une fois authentifié.
             } else {
                 e.preventDefault();
+                error.innerText = "Format attendu: 03x0000000 (10 chiffres)";
                 error.classList.remove('hidden');
                 this.classList.add('animate-shake');
                 setTimeout(() => this.classList.remove('animate-shake'), 400);

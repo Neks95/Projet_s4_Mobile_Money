@@ -15,8 +15,8 @@ class AuthController extends BaseController
     {
         $session = session();
         $model = new ClientModel();
-        $numero = $this->request->getPost('numero_telephone');
-
+        $numero = trim($this->request->getPost('numero_telephone'));
+        
         if ($model->existsByNumero($numero)) {
             $client = $model->getByNumero($numero);
             $session->set('client', $client);
