@@ -47,13 +47,13 @@
                         Se connecter
                     </button>
                 </form>
-
             </div>
             <p class="mt-xl text-outline text-center text-body-sm font-body-sm">
                 En vous connectant, vous acceptez nos <br /> <span class="text-primary font-bold cursor-pointer">Conditions d'utilisation</span>
             </p>
             <p class="mt-xl text-outline text-center text-body-sm font-body-sm">
-                Se connecter en tant qu'<span class="text-primary font-bold cursor-pointer">Opérateur</span>
+                Se connecter en tant qu'
+                <a class="text-primary font-bold cursor-pointer" href="/operateur/login">Opérateur</a>
             </p>
         </div>
     </div>
@@ -75,7 +75,6 @@
             }
         });
     </script>
-
 </body>
 
 </html>
