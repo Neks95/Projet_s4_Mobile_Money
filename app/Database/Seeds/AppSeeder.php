@@ -94,7 +94,6 @@ class AppSeeder extends Seeder
         }
 
         // --- 5. BAREMES DE FRAIS (Retrait Cash) ---
-        // --- 5. BAREMES DE FRAIS ---
         $baremes = [
             // Barèmes pour RETRAIT (id_type_operation = 2)
             ['montant_min' => 0,     'montant_max' => 5000,   'frais' => 150,  'type' => 'retrait'],
@@ -130,7 +129,7 @@ class AppSeeder extends Seeder
 
         foreach ($operationsInitiales as $o) {
             $fraisApplique = 0.0;
-
+            
             // Recherche dynamique du frais dans la table 'bareme_frais'
             $baremeTrouve = $this->db->table('bareme_frais')
                 ->where('id_type_operation', $o['type'])
@@ -152,5 +151,10 @@ class AppSeeder extends Seeder
                 'frais_applique'    => $fraisApplique
             ]);
         }
+        
+        $this->db->table('conf_transfert')->insert([
+            'id_operateur' => $operateurIds['Orange'],
+            'commission'   => 5.0
+        ]);
     }
 }

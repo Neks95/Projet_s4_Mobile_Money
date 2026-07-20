@@ -153,6 +153,7 @@ class ClientController extends BaseController
     $description = $this->request->getPost('description');
     $inclureFrais = $this->request->getPost('inclure_frais_retrait') === 'on';
 
+    // 1. Gestion Multiples vs Simple : Création du tableau de numéros
     $numeros = array_map('trim', explode(',', $inputDest));
     $nbDest = count($numeros);
     $montantParPersonne = $montantTotal / $nbDest;
@@ -160,6 +161,7 @@ class ClientController extends BaseController
     $expediteur = $clientModel->find($session->get('client')['id']);
     $prefixesYas = $session->get('prefixes');
 
+    // 2. Validation : Vérifier que TOUS les numéros sont internes
     $estToutInterne = true;
     foreach ($numeros as $num) {
         $interne = false;
@@ -169,6 +171,7 @@ class ClientController extends BaseController
         if (!$interne) { $estToutInterne = false; break; }
     }
 
+    // 3. Calculs Commissions
     $fraisTransfert = $this->calculerFrais($montantTotal, 3);
     $fraisRetrait = ($inclureFrais && $estToutInterne) ? $this->calculerFrais($montantTotal, 2) : 0;
     $totalADebiter = $montantTotal + $fraisTransfert + $fraisRetrait;
@@ -177,16 +180,19 @@ class ClientController extends BaseController
         return redirect()->back()->with('error', 'Solde insuffisant. Total : ' . number_format($totalADebiter, 0, ',', '.') . ' Ar');
     }
 
+    // 4. Exécution
     $db->transStart();
     $clientModel->update($expediteur['id'], ['solde' => $expediteur['solde'] - $totalADebiter]);
 
     foreach ($numeros as $num) {
         $destinataire = $clientModel->where('numero_telephone', $num)->first();
         
+        // Logique de crédit
         if ($estToutInterne && $destinataire) {
             $clientModel->update($destinataire['id'], ['solde' => $destinataire['solde'] + $montantParPersonne]);
         }
 
+        // Enregistrement opération (on ne met les frais que sur la première ou dernière ligne pour éviter le cumul)
         $opModel->save([
             'id_client1'          => $expediteur['id'],
             'id_client2'          => ($estToutInterne && $destinataire) ? $destinataire['id'] : null,

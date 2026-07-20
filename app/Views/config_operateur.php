@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="light" lang="fr">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -18,21 +19,24 @@
             <span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Aura Finance</span>
             <div class="hidden md:flex gap-md ml-xl">
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Accueil</a>
-                <a class="text-primary font-bold border-b-2 border-primary" href="#">Configuration</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Transactions</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Rapports</a>
+                <a class="text-primary font-bold border-b-2 border-primary" href="<?= base_url('operateur') ?>">Configuration</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="<?= base_url('operateur/gains') ?>">Gains</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="<?= base_url('operateur/clients') ?>">Clients</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="<?= base_url('operateur/montants-operateurs') ?>">Opérateurs</a>
             </div>
         </div>
     </header>
 
     <main class="pt-24 px-container-margin max-w-[1200px] mx-auto pb-12">
-        <div class="mb-lg">
-            <h1 class="font-headline-lg text-headline-lg text-primary mb-base">Configuration de l'Opérateur</h1>
-            <p class="text-on-surface-variant font-body-sm">Paramétrez les préfixes mobiles, types d'opérations et barèmes de frais pour Madagascar.</p>
+        <div class="mb-lg flex flex-col md:flex-row md:items-end md:justify-between gap-md">
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-primary mb-base">Configuration de l'Opérateur</h1>
+                <p class="text-on-surface-variant font-body-sm">Paramétrez les préfixes mobiles, types d'opérations et barèmes de frais pour Madagascar.</p>
+            </div>
         </div>
 
         <div class="bento-grid grid grid-cols-12 gap-6">
-            
+
             <!-- SECTION 1 : Préfixes Valides -->
             <section class="col-span-12 lg:col-span-4 bento-card p-md flex flex-col gap-md bg-white rounded-2xl shadow-sm border border-outline-variant">
                 <div class="flex items-center justify-between">
@@ -42,7 +46,7 @@
                     </h2>
                     <span class="px-xs py-base bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Mobile</span>
                 </div>
-                
+
                 <form action="<?= base_url('operateur/addPrefixe') ?>" method="POST" class="flex gap-xs">
                     <input name="valeur" class="flex-1 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg font-body-sm px-sm py-xs" placeholder="Ex: 033" type="text" required />
                     <button type="submit" class="bg-primary text-on-primary px-sm py-xs rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all">Ajouter</button>
@@ -52,9 +56,9 @@
                     <?php if (!empty($prefixes)): ?>
                         <?php foreach ($prefixes as $prefixe): ?>
                             <div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
-                                <span class="font-bold text-primary"><?= esc($prefixe['Valeur']) ?></span>
+                                <span class="font-bold text-primary"><?= esc($prefixe['valeur']) ?></span>
                                 <span class="text-on-surface-variant text-[10px]"><?= esc($prefixe['operateur_nom']) ?></span>
-                                <a href="<?= base_url('operateur/deletePrefixe/'.$prefixe['id']) ?>" class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</a>
+                                <a href="<?= base_url('operateur/deletePrefixe/' . $prefixe['id']) ?>" class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</a>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -81,10 +85,6 @@
                             <div class="p-sm bg-surface-container rounded-xl flex items-center justify-between border-l-4 border-primary">
                                 <div>
                                     <p class="font-bold text-primary"><?= esc($type['libelle']) ?></p>
-                                    <p class="text-[12px] text-on-surface-variant">Opération enregistrée en base</p>
-                                </div>
-                                <div class="flex gap-base">
-                                    <span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-base bg-white rounded-md" data-icon="edit">edit</span>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -104,7 +104,7 @@
                         </h2>
                         <p class="text-on-surface-variant font-body-sm">Modification des tranches tarifaires en temps réel.</p>
                     </div>
-                    
+
                     <!-- Filtre de sélection dynamique de l'opération -->
                     <div class="flex flex-wrap gap-sm items-center">
                         <form method="GET" action="" class="flex items-center gap-xs">
@@ -118,10 +118,10 @@
                             </select>
                         </form>
 
-                        <button class="bg-primary-container text-on-primary-container px-md py-xs rounded-full font-bold flex items-center gap-xs hover:bg-primary hover:text-on-primary transition-all active:scale-95 shadow-sm">
+                        <a href="/operateur/addBareme" class="bg-primary-container text-on-primary-container px-md py-xs rounded-full font-bold flex items-center gap-xs hover:bg-primary hover:text-on-primary transition-all active:scale-95 shadow-sm">
                             <span class="material-symbols-outlined text-lg" data-icon="add">add</span>
                             Tranche
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -146,8 +146,16 @@
                                         <td class="px-md py-md font-bold text-primary"><?= number_format($bareme['frais'], 0, ',', ' ') ?> Ar</td>
                                         <td class="px-md py-md text-right">
                                             <div class="flex justify-end gap-xs">
-                                                <button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
-                                                <button class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+                                                <button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"
+                                                    onclick="location.href='/operateur/baremes/<?= $bareme['id'] ?>/modifier?type_op_selectionne=<?= $bareme['id_type_operation'] ?>'">
+                                                    <span class="material-symbols-outlined" data-icon="edit">edit</span>
+                                                </button>
+                                                <form action="/operateur/baremes/<?= $bareme['id'] ?>/supprimer" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce barème ?');">
+                                                    <?= csrf_field() /* Sécurité anti-CSRF recommandée par CodeIgniter */ ?>
+                                                    <button type="submit" class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error">
+                                                        <span class="material-symbols-outlined" data-icon="delete">delete</span>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -160,14 +168,15 @@
                     <div class="p-xl text-center flex flex-col items-center justify-center gap-sm">
                         <span class="material-symbols-outlined text-4xl text-on-surface-variant" data-icon="grid_off">grid_off</span>
                         <p class="text-on-surface-variant text-body-lg italic">Aucun barème de frais configuré pour cette opération.</p>
-                        <button class="mt-base bg-primary text-on-primary px-md py-sm rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm flex items-center gap-xs">
+                        <a href="/operateur/addBareme" class="mt-base bg-primary text-on-primary px-md py-sm rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm flex items-center gap-xs">
                             <span class="material-symbols-outlined" data-icon="add">add</span>
                             Créer la première configuration
-                        </button>
+                        </a>
                     </div>
                 <?php endif; ?>
             </section>
         </div>
     </main>
 </body>
+
 </html>

@@ -27,22 +27,16 @@
     + Calcul du nombre total de clients inscrits
 [X] Affichage de la page avec le tableau des comptes (`situation_clients.php`)
 
-
-## 4 Prefixes pour autre operateur
+## 4 Prefixex pour autre operateur
 [X] Ajout des donnees pour les autres operateurs dans le seeder
 
 ## 5 Commission en plus
 [X] Creation d'une nouvelle table pour la configuration de la commission en plus pour les transferts vers autres operateurs
-[X] Modification de la methode `processTransfert()` pour appliquer la commission en plus pour les transferts vers autres operateurs
+[X] Modification de la methode `processRetrait()` pour appliquer la commission en plus pour les transferts vers autres operateurs
 
 ## 6 Separation situation gain pour chaque operateur
-[X] Modification de la methode `situationGains()` pour separer `gain_operateur` (net) et `gain_autres_operateurs` (commission externe reversee)
-[X] Mise a jour de `situation_gains.php` pour utiliser les nouvelles variables du controleur (`gain_operateur`, `gain_autres_operateurs`, `gain_interne`, `gain_externe` par transaction)
+[X] Modification de la methode `gain()` pour separer les gains par operateur et afficher le total pour chaque operateur
+[] Affichage des gains des autres operateurs
 
-## 7 Situation des montants a envoyer a chaque operateur
-[X] Creation de la methode `situationOperateurs()` dans OperateurController :
-    + Filtrage des transferts externes (`id_client2` null) via la table `operation`
-    + Regroupement par operateur destinataire grace au prefixe du numero
-    + Calcul du montant total transfere et de la commission due par operateur
-[X] Creation de la route `operateur/montants-operateurs`
-[X] Creation de la page d'affichage (`situation_operateurs.php`) avec KPIs et tableau par operateur
+## 7 Situation des montant a envoyer a chaque operateur
+[] Creation d'une nouvelle page pour afficher le montant a envoyer a chaque operateur pour les transferts vers autres operateurs
