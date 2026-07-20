@@ -10,10 +10,15 @@ $routes->get('login', 'AuthController::login');
 $routes->post('login', 'AuthController::checkLogin');
 
 
-$routes->group('client', ['filter' => 'role:client'], function($routes) {
-    $routes->get('home','ClientController::getHome');
-    $routes->post('depot','ClientController::processDepot');
+$routes->group('client', ['filter' => 'role:client'], function ($routes) {
+    $routes->get('home', 'ClientController::getHome');
+    $routes->post('depot', 'ClientController::processDepot');
 });
 
-$routes->get('/operateur', 'OperateurController::index');
+$routes->get('operateur/login', 'OperateurController::login');
 
+$routes->group('operateur', ['filter' => 'role:operateur'], function ($routes) {
+    $routes->get('/', 'OperateurController::index');
+    $routes->get('/gain', 'OperateurController::gain');
+    $routes->post('addPrefixe', 'OperateurController::createPrefixe');
+});

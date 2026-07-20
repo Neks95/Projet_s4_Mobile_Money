@@ -1,313 +1,173 @@
 <!DOCTYPE html>
-
-<html class="light" lang="fr"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Configuration Opérateur | Aura Finance</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="<?= base_url('assets/css/aura-finance.css') ?>" rel="stylesheet"/>
-<script src="<?= base_url('assets/js/tailwind-config.js') ?>"></script>
+<html class="light" lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Configuration Opérateur | Aura Finance</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="<?= base_url('assets/css/aura-finance.css') ?>" rel="stylesheet" />
+    <script src="<?= base_url('assets/js/tailwind-config.js') ?>"></script>
 </head>
+
 <body class="bg-surface font-body-lg text-on-surface min-h-screen pb-24 md:pb-0">
-<!-- Top Navigation Bar -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-xs shadow-sm bg-surface">
-<div class="flex items-center gap-sm">
-<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Aura Finance</span>
-<div class="hidden md:flex gap-md ml-xl">
-<a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Accueil</a>
-<a class="text-primary font-bold border-b-2 border-primary" href="#">Configuration</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Transactions</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Rapports</a>
-</div>
-</div>
-<div class="flex items-center gap-sm">
-<button class="hidden md:block px-sm py-base text-primary font-bold hover:bg-surface-container-high transition-colors rounded-lg">Switch Role</button>
-<div class="flex gap-xs">
-<span class="material-symbols-outlined p-xs hover:bg-surface-container-high rounded-full cursor-pointer transition-colors" data-icon="notifications">notifications</span>
-<span class="material-symbols-outlined p-xs hover:bg-surface-container-high rounded-full cursor-pointer transition-colors" data-icon="account_circle">account_circle</span>
-</div>
-</div>
-</header>
-<main class="pt-24 px-container-margin max-w-[1200px] mx-auto pb-12">
-<!-- Breadcrumbs / Title -->
-<div class="mb-lg">
-<h1 class="font-headline-lg text-headline-lg text-primary mb-base">Configuration de l'Opérateur</h1>
-<p class="text-on-surface-variant font-body-sm">Paramétrez les préfixes mobiles, types d'opérations et barèmes de frais pour Madagascar.</p>
-</div>
-<div class="bento-grid">
-<!-- Prefix Configuration Section -->
-<section class="col-span-12 lg:col-span-4 bento-card p-md flex flex-col gap-md">
-<div class="flex items-center justify-between">
-<h2 class="font-title-md text-title-md flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary" data-icon="cell_tower">cell_tower</span>
+    <!-- Top Navigation Bar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-xs shadow-sm bg-surface">
+        <div class="flex items-center gap-sm">
+            <span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Aura Finance</span>
+            <div class="hidden md:flex gap-md ml-xl">
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Accueil</a>
+                <a class="text-primary font-bold border-b-2 border-primary" href="#">Configuration</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Transactions</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Rapports</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 px-container-margin max-w-[1200px] mx-auto pb-12">
+        <div class="mb-lg">
+            <h1 class="font-headline-lg text-headline-lg text-primary mb-base">Configuration de l'Opérateur</h1>
+            <p class="text-on-surface-variant font-body-sm">Paramétrez les préfixes mobiles, types d'opérations et barèmes de frais pour Madagascar.</p>
+        </div>
+
+        <div class="bento-grid grid grid-cols-12 gap-6">
+            
+            <!-- SECTION 1 : Préfixes Valides -->
+            <section class="col-span-12 lg:col-span-4 bento-card p-md flex flex-col gap-md bg-white rounded-2xl shadow-sm border border-outline-variant">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-title-md text-title-md flex items-center gap-xs font-semibold">
+                        <span class="material-symbols-outlined text-primary" data-icon="cell_tower">cell_tower</span>
                         Préfixes Valides
                     </h2>
-<span class="px-xs py-base bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Mobile</span>
-</div>
-<div class="flex gap-xs">
-<input class="flex-1 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg font-body-sm px-sm py-xs" placeholder="Ex: 033" type="text"/>
-<button class="bg-primary text-on-primary px-sm py-xs rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all">Ajouter</button>
-</div>
-<div class="flex flex-wrap gap-xs overflow-y-auto max-h-48 custom-scrollbar">
-<div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
-<span class="font-bold text-primary">033</span>
-<span class="text-on-surface-variant text-[10px]">Airtel</span>
-<span class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</span>
-</div>
-<div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
-<span class="font-bold text-primary">034</span>
-<span class="text-on-surface-variant text-[10px]">Telma</span>
-<span class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</span>
-</div>
-<div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
-<span class="font-bold text-primary">032</span>
-<span class="text-on-surface-variant text-[10px]">Orange</span>
-<span class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</span>
-</div>
-<div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
-<span class="font-bold text-primary">037</span>
-<span class="text-on-surface-variant text-[10px]">Airtel</span>
-<span class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</span>
-</div>
-<div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
-<span class="font-bold text-primary">038</span>
-<span class="text-on-surface-variant text-[10px]">Telma</span>
-<span class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</span>
-</div>
-</div>
-</section>
-<!-- Operation Types and Quick Actions -->
-<section class="col-span-12 lg:col-span-8 bento-card p-md">
-<div class="flex items-center justify-between mb-md">
-<h2 class="font-title-md text-title-md flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary" data-icon="settings_suggest">settings_suggest</span>
+                    <span class="px-xs py-base bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Mobile</span>
+                </div>
+                
+                <form action="<?= base_url('operateur/addPrefixe') ?>" method="POST" class="flex gap-xs">
+                    <input name="valeur" class="flex-1 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg font-body-sm px-sm py-xs" placeholder="Ex: 033" type="text" required />
+                    <button type="submit" class="bg-primary text-on-primary px-sm py-xs rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all">Ajouter</button>
+                </form>
+
+                <div class="flex flex-wrap gap-xs overflow-y-auto max-h-48 custom-scrollbar">
+                    <?php if (!empty($prefixes)): ?>
+                        <?php foreach ($prefixes as $prefixe): ?>
+                            <div class="flex items-center gap-xs bg-surface-container-high px-sm py-xs rounded-full group cursor-default">
+                                <span class="font-bold text-primary"><?= esc($prefixe['Valeur']) ?></span>
+                                <span class="text-on-surface-variant text-[10px]"><?= esc($prefixe['operateur_nom']) ?></span>
+                                <a href="<?= base_url('operateur/deletePrefixe/'.$prefixe['id']) ?>" class="material-symbols-outlined text-sm text-error opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity" data-icon="close">close</a>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="text-on-surface-variant text-body-sm italic">Aucun préfixe configuré.</p>
+                    <?php endif; ?>
+                </div>
+            </section>
+
+            <!-- SECTION 2 : Types d'Opérations -->
+            <section class="col-span-12 lg:col-span-8 bento-card p-md bg-white rounded-2xl shadow-sm border border-outline-variant">
+                <div class="flex items-center justify-between mb-md">
+                    <h2 class="font-title-md text-title-md flex items-center gap-xs font-semibold">
+                        <span class="material-symbols-outlined text-primary" data-icon="settings_suggest">settings_suggest</span>
                         Types d'Opérations
                     </h2>
-<button class="text-primary font-bold text-body-sm flex items-center gap-base">
-<span class="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
+                    <button class="text-primary font-bold text-body-sm flex items-center gap-base">
+                        <span class="material-symbols-outlined text-lg" data-icon="add_circle">add_circle</span>
                         Nouveau Type
                     </button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
-<div class="p-sm bg-surface-container rounded-xl flex items-center justify-between border-l-4 border-primary">
-<div>
-<p class="font-bold text-primary">Retrait Cash</p>
-<p class="text-[12px] text-on-surface-variant">Frais appliqués au retrait en point de vente</p>
-</div>
-<div class="flex gap-base">
-<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-base bg-white rounded-md" data-icon="edit">edit</span>
-</div>
-</div>
-<div class="p-sm bg-surface-container rounded-xl flex items-center justify-between border-l-4 border-secondary">
-<div>
-<p class="font-bold text-secondary">Transfert Inter-compte</p>
-<p class="text-[12px] text-on-surface-variant">Transfert entre deux clients Aura</p>
-</div>
-<div class="flex gap-base">
-<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-base bg-white rounded-md" data-icon="edit">edit</span>
-</div>
-</div>
-<div class="p-sm bg-surface-container rounded-xl flex items-center justify-between border-l-4 border-primary">
-<div>
-<p class="font-bold text-primary">Dépôt d'argent</p>
-<p class="text-[12px] text-on-surface-variant">Alimentation du compte client</p>
-</div>
-<div class="flex gap-base">
-<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-base bg-white rounded-md" data-icon="edit">edit</span>
-</div>
-</div>
-<div class="p-sm bg-surface-container rounded-xl flex items-center justify-between border-l-4 border-secondary">
-<div>
-<p class="font-bold text-secondary">Paiement Facture</p>
-<p class="text-[12px] text-on-surface-variant">Frais fixes ou variables par marchand</p>
-</div>
-<div class="flex gap-base">
-<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-base bg-white rounded-md" data-icon="edit">edit</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Main Pricing Table Section -->
-<section class="col-span-12 bento-card overflow-hidden">
-<div class="p-md flex flex-col md:flex-row md:items-center justify-between gap-md border-b border-outline-variant">
-<div>
-<h2 class="font-title-md text-title-md flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary" data-icon="table_chart">table_chart</span>
-                            Barèmes de Frais : Retrait Cash
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+                    <?php if (!empty($types_operation)): ?>
+                        <?php foreach ($types_operation as $type): ?>
+                            <div class="p-sm bg-surface-container rounded-xl flex items-center justify-between border-l-4 border-primary">
+                                <div>
+                                    <p class="font-bold text-primary"><?= esc($type['libelle']) ?></p>
+                                    <p class="text-[12px] text-on-surface-variant">Opération enregistrée en base</p>
+                                </div>
+                                <div class="flex gap-base">
+                                    <span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-base bg-white rounded-md" data-icon="edit">edit</span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="text-on-surface-variant text-body-sm italic">Aucun type d'opération.</p>
+                    <?php endif; ?>
+                </div>
+            </section>
+
+            <!-- SECTION 3 : Tableau des Barèmes de Frais Dynamique -->
+            <section class="col-span-12 bento-card overflow-hidden bg-white rounded-2xl shadow-sm border border-outline-variant mt-6">
+                <div class="p-md flex flex-col md:flex-row md:items-center justify-between gap-md border-b border-outline-variant">
+                    <div>
+                        <h2 class="font-title-md text-title-md flex items-center gap-xs font-semibold">
+                            <span class="material-symbols-outlined text-primary" data-icon="table_chart">table_chart</span>
+                            Barèmes de Frais : <?= esc($libelle_operation_selectionne) ?>
                         </h2>
-<p class="text-on-surface-variant font-body-sm">Modification des tranches tarifaires en temps réel.</p>
-</div>
-<div class="flex gap-sm">
-<div class="relative">
-<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
-<input class="pl-xl pr-sm py-xs bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-full text-body-sm w-full md:w-64" placeholder="Rechercher une tranche..." type="text"/>
-</div>
-<button class="bg-primary-container text-on-primary-container px-md py-xs rounded-full font-bold flex items-center gap-xs hover:bg-primary hover:text-on-primary transition-all active:scale-95 shadow-sm">
-<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+                        <p class="text-on-surface-variant font-body-sm">Modification des tranches tarifaires en temps réel.</p>
+                    </div>
+                    
+                    <!-- Filtre de sélection dynamique de l'opération -->
+                    <div class="flex flex-wrap gap-sm items-center">
+                        <form method="GET" action="" class="flex items-center gap-xs">
+                            <label for="type_op" class="text-body-sm font-medium text-on-surface-variant whitespace-nowrap">Filtrer par :</label>
+                            <select name="type_op" id="type_op" onchange="this.form.submit()" class="bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-full text-body-sm py-xs pl-sm pr-xl cursor-pointer">
+                                <?php foreach ($types_operation as $type): ?>
+                                    <option value="<?= $type['id'] ?>" <?= $type['id'] == $id_type_op_selectionne ? 'selected' : '' ?>>
+                                        <?= esc($type['libelle']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </form>
+
+                        <button class="bg-primary-container text-on-primary-container px-md py-xs rounded-full font-bold flex items-center gap-xs hover:bg-primary hover:text-on-primary transition-all active:scale-95 shadow-sm">
+                            <span class="material-symbols-outlined text-lg" data-icon="add">add</span>
                             Tranche
                         </button>
-</div>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-secondary text-on-secondary uppercase text-[11px] tracking-[0.1em] font-bold">
-<th class="px-md py-sm">ID</th>
-<th class="px-md py-sm">Min (Ar)</th>
-<th class="px-md py-sm">Max (Ar)</th>
-<th class="px-md py-sm">Frais (Ar / %)</th>
-<th class="px-md py-sm">Type de Frais</th>
-<th class="px-md py-sm text-center">Statut</th>
-<th class="px-md py-sm text-right">Actions</th>
-</tr>
-</thead>
-<tbody class="text-body-sm font-medium divide-y divide-outline-variant">
-<tr class="hover:bg-primary-container/5 transition-colors">
-<td class="px-md py-md text-on-surface-variant">#001</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">0</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">5 000</td>
-<td class="px-md py-md font-bold text-primary">150</td>
-<td class="px-md py-md">
-<span class="px-xs py-base bg-surface-container text-on-surface-variant rounded-md text-[10px]">FIXE</span>
-</td>
-<td class="px-md py-md text-center">
-<span class="inline-flex items-center px-xs py-base bg-green-100 text-green-700 rounded-full text-[10px] font-bold">ACTIF</span>
-</td>
-<td class="px-md py-md text-right">
-<div class="flex justify-end gap-xs">
-<button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
-<button class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="bg-surface-container-low hover:bg-primary-container/5 transition-colors">
-<td class="px-md py-md text-on-surface-variant">#002</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">5 001</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">10 000</td>
-<td class="px-md py-md font-bold text-primary">300</td>
-<td class="px-md py-md">
-<span class="px-xs py-base bg-surface-container text-on-surface-variant rounded-md text-[10px]">FIXE</span>
-</td>
-<td class="px-md py-md text-center">
-<span class="inline-flex items-center px-xs py-base bg-green-100 text-green-700 rounded-full text-[10px] font-bold">ACTIF</span>
-</td>
-<td class="px-md py-md text-right">
-<div class="flex justify-end gap-xs">
-<button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
-<button class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="hover:bg-primary-container/5 transition-colors">
-<td class="px-md py-md text-on-surface-variant">#003</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">10 001</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">50 000</td>
-<td class="px-md py-md font-bold text-primary">2.5 %</td>
-<td class="px-md py-md">
-<span class="px-xs py-base bg-surface-container text-on-surface-variant rounded-md text-[10px]">POURCENTAGE</span>
-</td>
-<td class="px-md py-md text-center">
-<span class="inline-flex items-center px-xs py-base bg-green-100 text-green-700 rounded-full text-[10px] font-bold">ACTIF</span>
-</td>
-<td class="px-md py-md text-right">
-<div class="flex justify-end gap-xs">
-<button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
-<button class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="bg-surface-container-low hover:bg-primary-container/5 transition-colors">
-<td class="px-md py-md text-on-surface-variant">#004</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">50 001</td>
-<td class="px-md py-md font-numeric-data text-headline-lg-mobile text-[16px]">100 000</td>
-<td class="px-md py-md font-bold text-primary">1 200</td>
-<td class="px-md py-md">
-<span class="px-xs py-base bg-surface-container text-on-surface-variant rounded-md text-[10px]">FIXE</span>
-</td>
-<td class="px-md py-md text-center">
-<span class="inline-flex items-center px-xs py-base bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">SUSPENDU</span>
-</td>
-<td class="px-md py-md text-right">
-<div class="flex justify-end gap-xs">
-<button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
-<button class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="p-md bg-surface-container-low flex justify-between items-center text-body-sm">
-<p class="text-on-surface-variant">Affichage de 1 à 4 sur 12 tranches</p>
-<div class="flex gap-base">
-<button class="p-xs border border-outline-variant rounded-lg hover:bg-surface-container-high disabled:opacity-50" disabled=""><span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span></button>
-<button class="px-sm py-xs bg-primary text-on-primary rounded-lg font-bold">1</button>
-<button class="px-sm py-xs hover:bg-surface-container-high rounded-lg transition-colors">2</button>
-<button class="px-sm py-xs hover:bg-surface-container-high rounded-lg transition-colors">3</button>
-<button class="p-xs border border-outline-variant rounded-lg hover:bg-surface-container-high"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
-</div>
-</div>
-</section>
-</div>
-</main>
-<!-- Bottom Navigation Bar (Mobile only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs pb-sm pt-base bg-surface shadow-md rounded-t-xl">
-<a class="flex flex-col items-center justify-center text-secondary" href="#">
-<span class="material-symbols-outlined" data-icon="home">home</span>
-<span class="font-label-caps text-label-caps">Accueil</span>
-</a>
-<a class="flex flex-col items-center justify-center text-secondary" href="#">
-<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
-<span class="font-label-caps text-label-caps">Transactions</span>
-</a>
-<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-sm py-base" href="#">
-<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
-<span class="font-label-caps text-label-caps">Tarifs</span>
-</a>
-<a class="flex flex-col items-center justify-center text-secondary" href="#">
-<span class="material-symbols-outlined" data-icon="person">person</span>
-<span class="font-label-caps text-label-caps">Profil</span>
-</a>
-</nav>
-<!-- Footer Section -->
-<footer class="w-full flex flex-col items-center py-md px-container-margin mb-xl bg-surface-container-low border-t border-outline-variant mt-xl">
-<span class="font-title-md text-primary mb-xs">Aura Finance Madagascar</span>
-<div class="flex gap-md mb-sm">
-<a class="text-on-surface-variant hover:text-primary transition-colors text-body-sm" href="#">Sécurité</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors text-body-sm" href="#">Aide</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors text-body-sm" href="#">Conditions</a>
-</div>
-<p class="text-secondary font-body-sm">© 2024 Aura Finance Madagascar. Tous droits réservés.</p>
-</footer>
-<!-- FAB for quick access to add new Barème (visible contextually) -->
-<button class="fixed right-6 bottom-24 md:bottom-10 bg-primary-container text-on-primary-container w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-40 group">
-<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
-<span class="absolute right-16 bg-primary text-on-primary px-sm py-xs rounded-lg text-body-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">Nouvelle tranche</span>
-</button>
-<script>
-        // Simple Interaction logic
-        document.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('mousedown', () => {
-                btn.style.transform = 'scale(0.95)';
-            });
-            btn.addEventListener('mouseup', () => {
-                btn.style.transform = 'scale(1)';
-            });
-        });
+                    </div>
+                </div>
 
-        // Search highlight mock
-        const searchInput = document.querySelector('input[placeholder="Rechercher une tranche..."]');
-        if(searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                document.querySelectorAll('tbody tr').forEach(tr => {
-                    const text = tr.innerText.toLowerCase();
-                    tr.style.display = text.includes(term) ? '' : 'none';
-                });
-            });
-        }
-    </script>
-</body></html>
+                <?php if (!empty($baremes)): ?>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-secondary text-on-secondary uppercase text-[11px] tracking-[0.1em] font-bold">
+                                    <th class="px-md py-sm">ID</th>
+                                    <th class="px-md py-sm">Min (Ar)</th>
+                                    <th class="px-md py-sm">Max (Ar)</th>
+                                    <th class="px-md py-sm">Frais</th>
+                                    <th class="px-md py-sm text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-body-sm font-medium divide-y divide-outline-variant">
+                                <?php foreach ($baremes as $bareme): ?>
+                                    <tr class="hover:bg-primary-container/5 transition-colors">
+                                        <td class="px-md py-md text-on-surface-variant">#<?= sprintf('%03d', $bareme['id']) ?></td>
+                                        <td class="px-md py-md font-numeric-data text-[16px]"><?= number_format($bareme['montant_min'], 0, ',', ' ') ?></td>
+                                        <td class="px-md py-md font-numeric-data text-[16px]"><?= number_format($bareme['montant_max'], 0, ',', ' ') ?></td>
+                                        <td class="px-md py-md font-bold text-primary"><?= number_format($bareme['frais'], 0, ',', ' ') ?> Ar</td>
+                                        <td class="px-md py-md text-right">
+                                            <div class="flex justify-end gap-xs">
+                                                <button class="p-xs hover:bg-surface-container-high rounded-lg transition-colors text-primary"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+                                                <button class="p-xs hover:bg-error-container/20 rounded-lg transition-colors text-error"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <!-- Message vide adaptatif avec bouton d'ajout si aucune configuration n'existe -->
+                    <div class="p-xl text-center flex flex-col items-center justify-center gap-sm">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant" data-icon="grid_off">grid_off</span>
+                        <p class="text-on-surface-variant text-body-lg italic">Aucun barème de frais configuré pour cette opération.</p>
+                        <button class="mt-base bg-primary text-on-primary px-md py-sm rounded-lg font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm flex items-center gap-xs">
+                            <span class="material-symbols-outlined" data-icon="add">add</span>
+                            Créer la première configuration
+                        </button>
+                    </div>
+                <?php endif; ?>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
