@@ -141,64 +141,31 @@ class ClientController extends BaseController
         return redirect()->to('/client/home')->with('success', 'Retrait effectué avec succès.');
     }
 
-    public function processTransfert()
+    public function situationClients()
     {
-        $session = session();
-        $client = $session->get('client');
-        $montant = $this->request->getPost('montant');
-        $numeroDestinataire = $this->request->getPost('destinataire');
-        $description = $this->request->getPost('description');
-        $frais = $this->calculerFrais($montant, 3); 
-        $totalADebiter = $montant + $frais;
-
-        $clientModel = new ClientModel();
-        $opModel = new OperationModel();
         $db = \Config\Database::connect();
 
-        $expediteur = $clientModel->find($client['id']);
-        $destinataire = $clientModel->where('numero_telephone', $numeroDestinataire)->first(); 
+        // Récupération des clients avec leur préfixe et le nom de leur opérateur
+        $builder = $db->table('client');
+        $builder->select('client.*, prefixe.Valeur as code_prefixe, operateur.nom as nom_operateur');
+        $builder->join('prefixe', 'prefixe.id = client.id_prefixe', 'left');
+        $builder->join('operateur', 'operateur.id = prefixe.id_operateur', 'left');
+        $builder->orderBy('client.nom', 'ASC');
+        
+        $clients = $builder->get()->getResultArray();
 
-        if (!$destinataire) {
-            return redirect()->back()->with('error', 'Destinataire introuvable.');
-        }
-        if ($expediteur['solde'] < $totalADebiter) {
-            return redirect()->back()->with('error', 'Solde insuffisant.');
-        }
-        if ($expediteur['id'] == $destinataire['id']) {
-            return redirect()->back()->with('error', 'Impossible de s\'envoyer à soi-même.');
-        }
-
-        $destinataireNumero = $destinataire['numero_telephone'];
-
-        $db->transStart();
-
-        // 2. Débit expéditeur
-        $clientModel->update($expediteur['id'], ['solde' => $expediteur['solde'] - $totalADebiter]);
-        // 3. Crédit destinataire
-        $clientModel->update($destinataire['id'], ['solde' => $destinataire['solde'] + $montant]);
-
-        $defaultDescription = 'Transfert vers ' . $destinataireNumero;
-        if (!empty($destinataire['prenom']) && !empty($destinataire['nom'])) {
-            $defaultDescription = 'Transfert vers ' . $destinataire['prenom'] . ' ' . $destinataire['nom'] . ' (' . $destinataireNumero . ')';
+        // Calcul des métriques globales
+        $totalSoldes = 0;
+        foreach ($clients as $c) {
+            $totalSoldes += (float) $c['solde'];
         }
 
-        $opModel->save([
-            'id_client1'       => $expediteur['id'],
-            'id_client2'       => $destinataire['id'], 
-            'id_type_operation' => 3, 
-            'date_operation'   => date('Y-m-d H:i:s'),
-            'montant'          => $montant,
-            'frais_applique'   => $frais,
-            'description'      => !empty($description) ? $description : $defaultDescription
-        ]);
+        $data = [
+            'clients'       => $clients,
+            'total_soldes'  => $totalSoldes,
+            'total_clients' => count($clients)
+        ];
 
-        $db->transComplete();
-
-        if ($db->transStatus() === false) {
-            return redirect()->back()->with('error', 'Erreur transfert.');
-        }
-
-        $session->set('client', $clientModel->find($expediteur['id']));
-        return redirect()->to('/client/home')->with('success', 'Transfert vers ' . $destinataireNumero . ' réussi.');
+        return view('situation_clients', $data);
     }
 }

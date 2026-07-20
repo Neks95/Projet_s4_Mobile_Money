@@ -24,6 +24,13 @@ $routes->get('operateur/login', 'OperateurController::login');
 
 $routes->group('operateur', ['filter' => 'role:operateur'], function ($routes) {
     $routes->get('/', 'OperateurController::index');
-    $routes->get('/gain', 'OperateurController::gain');
+    $routes->get('gain', 'OperateurController::gain');
     $routes->post('addPrefixe', 'OperateurController::createPrefixe');
+    $routes->get('addBareme', 'OperateurController::newBareme');
+    $routes->post('baremes', 'OperateurController::createBareme');
+    $routes->post('baremes/(:num)', 'OperateurController::updateBareme/$1');
+    $routes->post('baremes/(:num)/supprimer', 'OperateurController::deleteBareme/$1');
+    $routes->get('baremes/(:num)/modifier', 'OperateurController::editBareme/$1');
+$routes->post('baremes/(:num)/modifier', 'OperateurController::updateBareme/$1');
+$routes->get('clients', 'ClientController::situationClients');
 });

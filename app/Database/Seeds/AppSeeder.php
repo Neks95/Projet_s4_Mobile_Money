@@ -25,14 +25,12 @@ class AppSeeder extends Seeder
             ['date_creation' => '2026-01-01', 'operateur' => 'Yas', 'Valeur' => '038'],
         ];
 
-        $prefixeIds = [];
         foreach ($prefixes as $prefixe) {
             $this->db->table('prefixe')->insert([
                 'date_creation' => $prefixe['date_creation'],
                 'id_operateur'  => $operateurIds[$prefixe['operateur']],
                 'Valeur'        => $prefixe['Valeur'],
             ]);
-            $prefixeIds[$prefixe['Valeur']] = $this->db->insertID();
         }
 
         // --- 3. TYPES D'OPERATION ---
@@ -53,37 +51,46 @@ class AppSeeder extends Seeder
             [
                 'nom'              => 'Ranaivo',
                 'prenom'           => 'Tsiky',
-                'numero_telephone' => '0341122233',
-                'prefixe'          => '033',
+                'numero_telephone' => '0331122233', // Commence par 033
                 'solde'            => 150000.0,
             ],
             [
                 'nom'              => 'Rakoto',
                 'prenom'           => 'Dylan',
-                'numero_telephone' => '0324455566',
-                'prefixe'          => '038',
+                'numero_telephone' => '0384455566', // Commence par 038
                 'solde'            => 25000.0,
             ],
             [
                 'nom'              => 'Andria',
                 'prenom'           => 'Owan',
-                'numero_telephone' => '0337788899',
-                'prefixe'          => '033',
+                'numero_telephone' => '0337788899', // Commence par 033
                 'solde'            => 5000.0,
             ],
         ];
 
         foreach ($clients as $client) {
+            // Extraction des 3 premiers chiffres (ex: '033')
+            $extractionPrefixe = substr($client['numero_telephone'], 0, 3);
+
+            // Recherche dynamique de l'ID du préfixe en base de données
+            $prefixeTrouve = $this->db->table('prefixe')
+                ->where('Valeur', $extractionPrefixe)
+                ->get()
+                ->getRowArray();
+
+            // Si le préfixe n'existe pas en base, on peut mettre null ou lever une exception
+            $idPrefixe = $prefixeTrouve ? $prefixeTrouve['id'] : null;
+
             $this->db->table('client')->insert([
                 'nom'              => $client['nom'],
                 'prenom'           => $client['prenom'],
                 'numero_telephone' => $client['numero_telephone'],
-                'id_prefixe'       => $prefixeIds[$client['prefixe']],
+                'id_prefixe'       => $idPrefixe, // Affectation de l'ID trouvé dynamiquement
                 'solde'            => $client['solde'],
             ]);
         }
 
-        // --- 5. BAREMES DE FRAIS (pour Retrait Cash) ---
+        // --- 5. BAREMES DE FRAIS (Retrait Cash) ---
         $baremes = [
             ['montant_min' => 0,     'montant_max' => 5000,   'frais' => 150],
             ['montant_min' => 5001,  'montant_max' => 10000,  'frais' => 300],
@@ -100,18 +107,36 @@ class AppSeeder extends Seeder
             ]);
         }
 
-        $baremesTransfert = [
-            ['montant_min' => 0,     'montant_max' => 5000,   'frais' => 100],
-            ['montant_min' => 5001,  'montant_max' => 200000,  'frais' => 500],
-            ['montant_min' => 20001, 'montant_max' => 1000000, 'frais' => 2000],
+        // --- 6. OPERATIONS DE TEST ---
+        // Utilisation directe des IDs fixes 1, 2, 3 générés séquentiellement pour les clients
+        $operationsInitiales = [
+            ['c1' => 1, 'c2' => null, 'type' => $typeOperationIds['depot'], 'montant' => 100000],
+            ['c1' => 2, 'c2' => null, 'type' => $typeOperationIds['retrait'], 'montant' => 20000],
+            ['c1' => 1, 'c2' => 3,    'type' => $typeOperationIds['transfert'], 'montant' => 50000],
         ];
 
-        foreach ($baremesTransfert as $bareme) {
-            $this->db->table('bareme_frais')->insert([
-                'montant_min'       => $bareme['montant_min'],
-                'montant_max'       => $bareme['montant_max'],
-                'frais'             => $bareme['frais'],
-                'id_type_operation' => $typeOperationIds['transfert'],
+        foreach ($operationsInitiales as $o) {
+            $fraisApplique = 0.0;
+            
+            // Recherche dynamique du frais dans la table 'bareme_frais'
+            $baremeTrouve = $this->db->table('bareme_frais')
+                ->where('id_type_operation', $o['type'])
+                ->where('montant_min <=', $o['montant'])
+                ->where('montant_max >=', $o['montant'])
+                ->get()
+                ->getRowArray();
+
+            if ($baremeTrouve) {
+                $fraisApplique = (float)$baremeTrouve['frais'];
+            }
+
+            $this->db->table('operation')->insert([
+                'id_client1'        => $o['c1'],
+                'id_client2'        => $o['c2'],
+                'id_type_operation' => $o['type'],
+                'date_operation'    => date('Y-m-d H:i:s'),
+                'montant'           => $o['montant'],
+                'frais_applique'    => $fraisApplique
             ]);
         }
     }
