@@ -15,4 +15,5 @@ $routes->group('client', ['filter' => 'role:client'], function($routes) {
     $routes->post('depot','ClientController::processDepot');
 });
 
+$routes->get('/operateur', 'OperateurController::index');
 
