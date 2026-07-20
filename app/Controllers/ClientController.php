@@ -41,11 +41,25 @@ class ClientController extends BaseController
         return view('historique_client', $data);
     }
 
+    private function calculerFrais($montant, $idTypeOperation)
+    {
+        $db = \Config\Database::connect();
+        $bareme = $db->table('bareme_frais')
+                     ->where('id_type_operation', $idTypeOperation)
+                     ->where('montant_min <=', $montant)
+                     ->where('montant_max >=', $montant)
+                     ->get()
+                     ->getRow();
+
+        return $bareme ? $bareme->frais : 0;
+    }
+
     public function processDepot()
     {
         $session = session();
         $client = $session->get('client');
         $montant = $this->request->getPost('montant');
+        $description = $this->request->getPost('description');
 
         if (!$client || !is_numeric($montant) || $montant <= 0) {
             return redirect()->back()->with('error', 'Données invalides.');
@@ -66,7 +80,8 @@ class ClientController extends BaseController
             'id_type_operation' => 1,
             'date_operation'   => date('Y-m-d H:i:s'),
             'montant'          => $montant,
-            'frais_applique'   => 0
+            'frais_applique'   => 0,
+            'description'      => !empty($description) ? $description : 'Dépôt en espèces'
         ]);
 
         $db->transComplete();
@@ -84,8 +99,11 @@ class ClientController extends BaseController
         $session = session();
         $client = $session->get('client');
         $montant = $this->request->getPost('montant');
+        $description = $this->request->getPost('description');
+        $frais = $this->calculerFrais($montant, 2); 
+        $totalADebiter = $montant + $frais;
 
-        if (!$client || !is_numeric($montant) || $montant <= 0) {
+        if (!$client || !is_numeric($totalADebiter) || $totalADebiter <= 0) {
             return redirect()->back()->with('error', 'Données invalides.');
         }
 
@@ -95,22 +113,22 @@ class ClientController extends BaseController
 
         $clientInfo = $clientModel->find($client['id']);
 
-        if ($clientInfo['solde'] < $montant) {
+        if ($clientInfo['solde'] < $totalADebiter) {
             return redirect()->back()->with('error', 'Solde insuffisant.');
         }
 
-
         $db->transStart();
 
-        $clientModel->update($clientInfo['id'], ['solde' => $clientInfo['solde'] - $montant]);
+        $clientModel->update($clientInfo['id'], ['solde' => $clientInfo['solde'] - $totalADebiter]);
 
         $opModel->save([
             'id_client1'       => $clientInfo['id'],
             'id_client2'       => $clientInfo['id'],
-            'id_type_operation' => 2, // ID 2 = Retrait
+            'id_type_operation' => 2,
             'date_operation'   => date('Y-m-d H:i:s'),
             'montant'          => $montant,
-            'frais_applique'   => 0
+            'frais_applique'   => $frais,
+            'description'      => !empty($description) ? $description : 'Retrait en espèces'
         ]);
 
         $db->transComplete();

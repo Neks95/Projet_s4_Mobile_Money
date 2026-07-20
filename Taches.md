@@ -25,6 +25,7 @@ Tsiky
 ### 2) affichage de acceuil 
 * Creation de ClientController et fonction getHome() qui prend les infos a partir de la session 
 * creations de OperationModel pour get les activites recentes 
+  
 ### 3) depot
 * Creation de route /client/depot pour traiter le depot
 * Creation de la fonction processDepot dans controller
@@ -34,10 +35,19 @@ Tsiky
 * Creation de route /client/retrait pour traiter le depot
 * Creation de la fonction processRetrait dans controller
 * debut de transaction : echoue si le montant est superieur a la solde
+* handling des frais , methode dans ClientController
+
 
 ### 5) historique
 * Creation d'une fonction historique dans CLientController pour prendres tous les operations lies au compte dans la session
-* Ajout de route historique et d'un lien dans accueil qui va rediriger la bas
+* Ajout de route historique et d'un lien dans accueil qui va rediriger la bas1
+
+## 6) transfert
+* Creation de route /client/depot pour traiter le depot
+* Creation de la fonction processDepot dans controller
+* handling des frais , methode dans ClientController
+
+
 
 
 

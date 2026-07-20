@@ -10,7 +10,8 @@ class OperationModel extends Model {
         'id_client2', 
         'id_type_operation', 
         'date_operation', 
-        'montant', 
+        'montant',
+        'description' ,
         'frais_applique'
     ];
 
