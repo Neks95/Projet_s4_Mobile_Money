@@ -43,6 +43,7 @@ CREATE TABLE operation(
     date_operation TEXT,
     montant REAL,
     frais_applique REAL ,
+    description REAL ,
     FOREIGN KEY (id_client1) REFERENCES client(id),
     FOREIGN KEY (id_client2) REFERENCES client(id),
     FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
