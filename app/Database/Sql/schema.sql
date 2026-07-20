@@ -7,6 +7,7 @@ CREATE TABLE prefixe(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date_creation DATE,
     id_operateur INTEGER,
+    valeur TEXT,
     FOREIGN KEY (id_operateur) REFERENCES operateur(id)
 );
 

@@ -20,7 +20,25 @@ Tsiky
 * Creation de route pour login client
 * `si existe` -> **redirection acceuil**
 * `sinon` -> **message d'erreur**
-* Ajout de filtre
+* Ajout de filter pour filtrer les roles
+
+### 2) affichage de acceuil 
+* Creation de ClientController et fonction getHome() qui prend les infos a partir de la session 
+* creations de OperationModel pour get les activites recentes 
+### 3) depot
+* Creation de route /client/depot pour traiter le depot
+* Creation de la fonction processDepot dans controller
+* debut de transaction
+
+### 4) retrait
+* Creation de route /client/retrait pour traiter le depot
+* Creation de la fonction processRetrait dans controller
+* debut de transaction : echoue si le montant est superieur a la solde
+
+### 5) historique
+* Creation d'une fonction historique dans CLientController pour prendres tous les operations lies au compte dans la session
+* Ajout de route historique et d'un lien dans accueil qui va rediriger la bas
+
 
 
 
