@@ -105,7 +105,9 @@ class AppSeeder extends Seeder
             ['montant_min' => 0,     'montant_max' => 10000,  'frais' => 100,  'type' => 'transfert'],
             ['montant_min' => 10001, 'montant_max' => 50000,  'frais' => 200,  'type' => 'transfert'],
             ['montant_min' => 50001, 'montant_max' => 100000, 'frais' => 500,  'type' => 'transfert'],
-            ['montant_min' => 100001, 'montant_max' => 500000, 'frais' => 1000, 'type' => 'transfert'],
+            ['montant_min' => 100001, 'montant_max' => 500000, 'frais' => 5000, 'type' => 'transfert'],
+            ['montant_min' => 500001, 'montant_max' => 1000000, 'frais' => 1000, 'type' => 'transfert'],
+
         ];
 
 
@@ -154,7 +156,7 @@ class AppSeeder extends Seeder
         
         $this->db->table('conf_transfert')->insert([
             'id_operateur' => $operateurIds['Orange'],
-            'commission'   => 5.0
+            'comission'   => 5.0
         ]);
     }
 }

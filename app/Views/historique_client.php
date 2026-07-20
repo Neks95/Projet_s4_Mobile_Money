@@ -14,29 +14,59 @@
         .transaction-enter {
             animation: slideUp 0.3s ease-out forwards;
         }
-        
+
         @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
-        .transaction-enter:nth-child(1) { animation-delay: 0.05s; }
-        .transaction-enter:nth-child(2) { animation-delay: 0.10s; }
-        .transaction-enter:nth-child(3) { animation-delay: 0.15s; }
-        .transaction-enter:nth-child(4) { animation-delay: 0.20s; }
-        .transaction-enter:nth-child(5) { animation-delay: 0.25s; }
-        .transaction-enter:nth-child(6) { animation-delay: 0.30s; }
-        .transaction-enter:nth-child(7) { animation-delay: 0.35s; }
-        .transaction-enter:nth-child(8) { animation-delay: 0.40s; }
-        .transaction-enter:nth-child(9) { animation-delay: 0.45s; }
-        .transaction-enter:nth-child(10) { animation-delay: 0.50s; }
-        
+
+        .transaction-enter:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .transaction-enter:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .transaction-enter:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .transaction-enter:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .transaction-enter:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .transaction-enter:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+
+        .transaction-enter:nth-child(7) {
+            animation-delay: 0.35s;
+        }
+
+        .transaction-enter:nth-child(8) {
+            animation-delay: 0.40s;
+        }
+
+        .transaction-enter:nth-child(9) {
+            animation-delay: 0.45s;
+        }
+
+        .transaction-enter:nth-child(10) {
+            animation-delay: 0.50s;
+        }
+
         .frais-badge {
             font-size: 0.65rem;
             padding: 0.15rem 0.5rem;
@@ -74,8 +104,8 @@
                     </a>
                 </div>
             </div>
-            
-            <?php if (!empty($transactions)): 
+
+            <?php if (!empty($transactions)):
                 $totalDepots = 0;
                 $totalRetraits = 0;
                 $totalTransferts = 0;
@@ -92,28 +122,28 @@
                     $totalFrais += $op['frais_applique'] ?? 0;
                 }
             ?>
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-sm mt-md">
-                <div class="bg-green-50 p-sm rounded-lg text-center">
-                    <div class="text-xs text-green-700 font-medium uppercase">Total Dépôts</div>
-                    <div class="text-lg font-bold text-green-800"><?= number_format($totalDepots, 0, ',', '.') ?> Ar</div>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-sm mt-md">
+                    <div class="bg-green-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-green-700 font-medium uppercase">Total Dépôts</div>
+                        <div class="text-lg font-bold text-green-800"><?= number_format($totalDepots, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-red-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-red-700 font-medium uppercase">Total Retraits</div>
+                        <div class="text-lg font-bold text-red-800"><?= number_format($totalRetraits, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-blue-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-blue-700 font-medium uppercase">Total Transferts</div>
+                        <div class="text-lg font-bold text-blue-800"><?= number_format($totalTransferts, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-orange-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-orange-700 font-medium uppercase">Total Frais</div>
+                        <div class="text-lg font-bold text-orange-800"><?= number_format($totalFrais, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-purple-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-purple-700 font-medium uppercase">Total Opérations</div>
+                        <div class="text-lg font-bold text-purple-800"><?= count($transactions) ?></div>
+                    </div>
                 </div>
-                <div class="bg-red-50 p-sm rounded-lg text-center">
-                    <div class="text-xs text-red-700 font-medium uppercase">Total Retraits</div>
-                    <div class="text-lg font-bold text-red-800"><?= number_format($totalRetraits, 0, ',', '.') ?> Ar</div>
-                </div>
-                <div class="bg-blue-50 p-sm rounded-lg text-center">
-                    <div class="text-xs text-blue-700 font-medium uppercase">Total Transferts</div>
-                    <div class="text-lg font-bold text-blue-800"><?= number_format($totalTransferts, 0, ',', '.') ?> Ar</div>
-                </div>
-                <div class="bg-orange-50 p-sm rounded-lg text-center">
-                    <div class="text-xs text-orange-700 font-medium uppercase">Total Frais</div>
-                    <div class="text-lg font-bold text-orange-800"><?= number_format($totalFrais, 0, ',', '.') ?> Ar</div>
-                </div>
-                <div class="bg-purple-50 p-sm rounded-lg text-center">
-                    <div class="text-xs text-purple-700 font-medium uppercase">Total Opérations</div>
-                    <div class="text-lg font-bold text-purple-800"><?= count($transactions) ?></div>
-                </div>
-            </div>
             <?php endif; ?>
         </div>
 
@@ -149,31 +179,31 @@
                     </thead>
                     <tbody class="divide-y divide-outline-variant" id="table-body">
                         <?php if (!empty($transactions)): ?>
-                            <?php 
+                            <?php
                             $clientId = session()->get('client')['id'];
-                            foreach ($transactions as $op): 
+                            foreach ($transactions as $op):
                                 $isDepot = ($op['libelle'] == 'depot');
                                 $isRetrait = ($op['libelle'] == 'retrait');
                                 $isTransfert = ($op['libelle'] == 'transfert');
-                                
+
                                 $estExpediteur = ($op['id_client1'] == $clientId);
                                 $estReceveur = ($op['id_client2'] == $clientId);
-                                
+
                                 if ($isTransfert && $estReceveur) {
-                                    $isCredit = true;  
+                                    $isCredit = true;
                                 } elseif ($isTransfert && $estExpediteur) {
-                                    $isCredit = false; 
+                                    $isCredit = false;
                                 } else {
-                                    $isCredit = $isDepot; 
+                                    $isCredit = $isDepot;
                                 }
-                                
+
                                 $rowClass = $isCredit ? 'bg-green-50/30' : 'bg-red-50/30';
                                 $textColor = $isCredit ? 'text-green-700' : 'text-red-600';
                                 $signe = $isCredit ? '+' : '-';
                                 $montantAffiche = $op['montant'];
                                 $frais = $op['frais_applique'] ?? 0;
                                 $totalOperation = $isCredit ? $montantAffiche : ($montantAffiche + $frais);
-                                
+
                                 // Déterminer l'icône et la couleur
                                 if ($isDepot) {
                                     $icon = 'payments';
@@ -194,7 +224,7 @@
                                     $labelColor = 'text-blue-800';
                                     $libelleAffiche = 'transfert';
                                 }
-                                
+
                                 $libelleAffiche = $isTransfert && $estReceveur ? 'réception' : $op['libelle'];
                             ?>
                                 <tr class="transaction-enter hover:bg-surface-container transition-colors <?= $rowClass ?>" data-type="<?= esc($op['libelle']) ?>">
@@ -233,8 +263,14 @@
                                         <?= $signe ?>
                                         <?= number_format($totalOperation, 0, ',', '.') ?> Ar
                                     </td>
-                                    <td class="px-sm py-md text-right text-sm text-on-surface-variant hidden lg:table-cell max-w-[150px] truncate">
-                                        <?= !empty($op['description']) ? esc($op['description']) : '—' ?>
+                                    <td class="px-sm py-md text-right text-sm text-on-surface-variant max-w-[200px] truncate relative group">
+                                        <?php if (!empty($op['description'])): ?>
+                                            <span class="cursor-help" title="<?= esc($op['description']) ?>">
+                                                <?= esc($op['description']) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            —
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -250,11 +286,11 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <?php if (!empty($transactions)): ?>
-            <div class="px-sm py-md border-t border-outline-variant flex justify-between items-center text-xs text-on-surface-variant">
-                <span>Affichage de <strong><?= count($transactions) ?></strong> transaction<?= count($transactions) > 1 ? 's' : '' ?></span>
-            </div>
+                <div class="px-sm py-md border-t border-outline-variant flex justify-between items-center text-xs text-on-surface-variant">
+                    <span>Affichage de <strong><?= count($transactions) ?></strong> transaction<?= count($transactions) > 1 ? 's' : '' ?></span>
+                </div>
             <?php endif; ?>
         </div>
     </main>
@@ -274,7 +310,7 @@
         function filterTable(type) {
             const rows = document.querySelectorAll('#table-body tr');
             const buttons = document.querySelectorAll('.filter-btn');
-            
+
             buttons.forEach(btn => {
                 btn.classList.remove('bg-primary', 'text-on-primary');
                 btn.classList.add('bg-surface-container-high', 'text-on-surface');
@@ -283,14 +319,14 @@
                     btn.classList.add('bg-primary', 'text-on-primary');
                 }
             });
-            
+
             if (type === 'all') {
                 rows.forEach(row => {
                     row.style.display = '';
                 });
                 return;
             }
-            
+
             rows.forEach(row => {
                 if (row.dataset.type === type) {
                     row.style.display = '';

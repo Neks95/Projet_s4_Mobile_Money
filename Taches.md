@@ -50,6 +50,7 @@ Tsiky
 
 
 ## `Côté client` , V2
+## 1) transfert externe avec handling de frais de retrait
 * Mettre les prefixes dans la session lors de la connexion
   -Creation de PrefixeModel ( id = 1 pour Yas)
   -fonction getPrefixes()
@@ -59,6 +60,25 @@ Tsiky
     -si oui : active l'input
     -si non : cache l'input
 * Modification de processTransfert : ajouter le frais de retrait correspondant au montant dans totalAdebiter si client de notre operateur
+C'est un changement logique important : si tu souhaites **restreindre** le transfert multiple uniquement aux numéros de ton opérateur (YAS), voici les étapes simplifiées pour adapter ton système :
+
+## 2) transfert multiple
+
+* Validation stricte dès la saisie (JS)
+* Le JavaScript vérifie désormais chaque numéro de la liste : si **un seul numéro** ne commence pas par un préfixe YAS, le bouton "Confirmer" est désactivé ou un message d'erreur bloque la soumission.
+
+
+* Filtrage serveur obligatoire (Contrôleur)
+* Avant tout traitement, le contrôleur rejette la requête si l'un des numéros fournis ne correspond pas à un préfixe YAS.
+* Cela garantit que le transfert multiple reste un circuit fermé (100% interne).
+
+
+* Calcul et exécution simplifiés
+* Comme tous les numéros sont YAS, le calcul des frais de retrait devient systématique si la case est cochée.
+* Le système débite l'expéditeur du `Montant Total + Frais Transfert + Frais Retrait` et credite chaque destinataire YAS de sa part respective en une seule transaction sécurisée.
+
+
+
 
 
 
