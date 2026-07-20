@@ -23,17 +23,17 @@
     </header>
 
     <main class="pt-20 pb-28 px-container-margin max-w-[1200px] mx-auto w-full">
-    <?php if (session()->has('error')): ?>
-        <div class="mb-lg p-md bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold">
-            <?= session()->getFlashdata('error') ?>
-        </div>
-    <?php endif; ?>
+        <?php if (session()->has('error')): ?>
+            <div class="mb-lg p-md bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold">
+                <?= session()->getFlashdata('error') ?>
+            </div>
+        <?php endif; ?>
 
-    <?php if (session()->has('success')): ?>
-        <div class="mb-lg p-md bg-green-100 border border-green-400 text-green-700 rounded-lg text-center font-bold">
-            <?= session()->getFlashdata('success') ?>
-        </div>
-    <?php endif; ?>
+        <?php if (session()->has('success')): ?>
+            <div class="mb-lg p-md bg-green-100 border border-green-400 text-green-700 rounded-lg text-center font-bold">
+                <?= session()->getFlashdata('success') ?>
+            </div>
+        <?php endif; ?>
         <!-- Welcome -->
         <div class="mb-lg">
             <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">
@@ -72,8 +72,8 @@
         <div class="mt-xl">
             <h3 class="font-title-md text-title-md mb-md">Activités Récentes</h3>
             <a href="<?= base_url('client/historique') ?>" class="text-primary font-medium text-sm hover:underline">
-            Voir tout
-        </a>
+                Voir tout
+            </a>
             <div class="space-y-sm">
                 <?php foreach ($activites as $op): ?>
                     <div class="flex items-center justify-between p-sm bg-white rounded-lg shadow-sm border border-outline-variant/10">
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <p class="text-primary font-bold">
-                            <?= ($op['libelle'] == 'dépôt') ? '+' : '-' ?>
+                            <?= ($op['libelle'] == 'depot') ? '+' : '-' ?>
                             <?= number_format($op['montant'], 0, ',', '.') ?> Ar
                         </p>
                     </div>
@@ -109,11 +109,22 @@
                     <h3 class="font-title-md text-title-md capitalize" id="modal-title">Action</h3>
                     <button type="button" class="material-symbols-outlined p-base hover:bg-surface-container rounded-full" onclick="closeModal()">close</button>
                 </div>
-             
+
                 <div class="space-y-lg">
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase mb-xs">Montant (Ar)</label>
                         <input name="montant" class="w-full text-display-lg border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="0" type="number" required />
+                    </div>
+
+                    <!-- Nouveau champ Description -->
+                    <div>
+                        <label class="block text-xs font-bold text-outline uppercase mb-xs">Description</label>
+                        <input name="description" id="description-input" class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="Motif de l'opération..." type="text" />
+                    </div>
+
+                    <div id="destinataire-group" class="hidden">
+                        <label class="block text-xs font-bold text-outline uppercase mb-xs">Numéro Destinataire</label>
+                        <input name="destinataire" id="destinataire-input" class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="03X XX XXX XX" type="text" />
                     </div>
                     <button type="submit" class="w-full py-md bg-primary-container text-on-primary-container rounded-lg font-bold shadow-md active:scale-95 transition-all">Confirmer</button>
                 </div>
@@ -122,29 +133,44 @@
     </div>
 
 
-    <script>
-        function openModal(type) {
-            document.getElementById('modal-title').innerText = type;
-            document.getElementById('type_op_input').value = type;
+   <script>
+    function openModal(type) {
+        document.getElementById('modal-title').innerText = type;
+        document.getElementById('type_op_input').value = type;
 
-            const form = document.getElementById('action-form');
-            if (type === 'dépôt') {
-                form.action = "<?= base_url('client/depot') ?>";
-            } else if (type === 'retrait') {
-                form.action = "<?= base_url('client/retrait') ?>";
-            } else if (type === 'transfert') {
-                form.action = "<?= base_url('client/transfert') ?>";
-            }
+        const destGroup = document.getElementById('destinataire-group');
+        const destInput = document.getElementById('destinataire-input');
 
-            document.getElementById('action-modal').classList.remove('opacity-0', 'pointer-events-none');
-            document.getElementById('action-modal').querySelector('div').classList.remove('translate-y-full');
+        if (type === 'transfert') {
+            destGroup.classList.remove('hidden');
+            destInput.setAttribute('required', 'required');
+        } else {
+            destGroup.classList.add('hidden');
+            destInput.removeAttribute('required');
         }
 
-        function closeModal() {
-            document.getElementById('action-modal').classList.add('opacity-0', 'pointer-events-none');
-            document.getElementById('action-modal').querySelector('div').classList.add('translate-y-full');
+        const form = document.getElementById('action-form');
+        if (type === 'dépôt') {
+            form.action = "<?= base_url('client/depot') ?>";
+        } else if (type === 'retrait') {
+            form.action = "<?= base_url('client/retrait') ?>";
+        } else if (type === 'transfert') {
+            form.action = "<?= base_url('client/transfert') ?>";
         }
-    </script>
+
+        document.getElementById('action-modal').classList.remove('opacity-0', 'pointer-events-none');
+        document.getElementById('action-modal').querySelector('div').classList.remove('translate-y-full');
+    }
+
+    function closeModal() {
+        document.getElementById('action-modal').classList.add('opacity-0', 'pointer-events-none');
+        document.getElementById('action-modal').querySelector('div').classList.add('translate-y-full');
+    }
+</script>
+
+            
+
+        
 </body>
 
 </html>

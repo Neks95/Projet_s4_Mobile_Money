@@ -99,5 +99,20 @@ class AppSeeder extends Seeder
                 'id_type_operation' => $typeOperationIds['retrait'],
             ]);
         }
+
+        $baremesTransfert = [
+            ['montant_min' => 0,     'montant_max' => 5000,   'frais' => 100],
+            ['montant_min' => 5001,  'montant_max' => 200000,  'frais' => 500],
+            ['montant_min' => 20001, 'montant_max' => 1000000, 'frais' => 2000],
+        ];
+
+        foreach ($baremesTransfert as $bareme) {
+            $this->db->table('bareme_frais')->insert([
+                'montant_min'       => $bareme['montant_min'],
+                'montant_max'       => $bareme['montant_max'],
+                'frais'             => $bareme['frais'],
+                'id_type_operation' => $typeOperationIds['transfert'],
+            ]);
+        }
     }
 }

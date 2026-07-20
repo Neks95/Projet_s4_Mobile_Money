@@ -9,14 +9,15 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('login', 'AuthController::login');
 $routes->post('login', 'AuthController::checkLogin');
 $routes->get('/', 'AuthController::login');
+$routes->get('logout','AuthController::logout');
 
 
 $routes->group('client', ['filter' => 'role:client'], function($routes) {
     $routes->get('home','ClientController::getHome');
     $routes->post('depot','ClientController::processDepot');
     $routes->post('retrait','ClientController::processRetrait');
+    $routes->post('transfert', 'ClientController::processTransfert');
     $routes->get('historique', 'ClientController::historique');
-
 });
 
 $routes->get('operateur/login', 'OperateurController::login');
