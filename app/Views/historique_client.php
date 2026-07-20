@@ -50,11 +50,10 @@
 <body class="bg-surface text-on-surface min-h-screen">
 
     <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-xs shadow-sm bg-surface">
-        <a class="font-bold text-primary text-xl flex items-center gap-xs" href="<?= base_url('client/home') ?>">
-            <span class="material-symbols-outlined">account_balance</span>
-            Aura Finance
-        </a>
-        <a class="material-symbols-outlined text-secondary hover:bg-surface-container-high transition-colors p-base rounded-full" href="<?= base_url('logout') ?>">logout</a>
+        <div class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Aura Finance</div>
+        <div class="flex items-center gap-sm">
+            <a class="material-symbols-outlined text-secondary hover:bg-surface-container-high transition-colors p-base rounded-full" href="<?= base_url('logout') ?>">logout</a>
+        </div>
     </header>
 
     <main class="pt-24 pb-32 px-container-margin max-w-6xl mx-auto">
@@ -81,6 +80,7 @@
                 $totalRetraits = 0;
                 $totalTransferts = 0;
                 $totalFrais = 0;
+                $clientId = session()->get('client')['id'];
                 foreach ($transactions as $op) {
                     if ($op['libelle'] == 'depot') {
                         $totalDepots += $op['montant'];
@@ -150,13 +150,52 @@
                     <tbody class="divide-y divide-outline-variant" id="table-body">
                         <?php if (!empty($transactions)): ?>
                             <?php 
+                            $clientId = session()->get('client')['id'];
                             foreach ($transactions as $op): 
                                 $isDepot = ($op['libelle'] == 'depot');
                                 $isRetrait = ($op['libelle'] == 'retrait');
                                 $isTransfert = ($op['libelle'] == 'transfert');
-                                $rowClass = $isDepot ? 'bg-green-50/30' : ($isRetrait ? 'bg-red-50/30' : 'bg-blue-50/30');
+                                
+                                $estExpediteur = ($op['id_client1'] == $clientId);
+                                $estReceveur = ($op['id_client2'] == $clientId);
+                                
+                                if ($isTransfert && $estReceveur) {
+                                    $isCredit = true;  
+                                } elseif ($isTransfert && $estExpediteur) {
+                                    $isCredit = false; 
+                                } else {
+                                    $isCredit = $isDepot; 
+                                }
+                                
+                                $rowClass = $isCredit ? 'bg-green-50/30' : 'bg-red-50/30';
+                                $textColor = $isCredit ? 'text-green-700' : 'text-red-600';
+                                $signe = $isCredit ? '+' : '-';
+                                $montantAffiche = $op['montant'];
                                 $frais = $op['frais_applique'] ?? 0;
-                                $totalOperation = $isDepot ? $op['montant'] : ($op['montant'] + $frais);
+                                $totalOperation = $isCredit ? $montantAffiche : ($montantAffiche + $frais);
+                                
+                                // Déterminer l'icône et la couleur
+                                if ($isDepot) {
+                                    $icon = 'payments';
+                                    $iconColor = 'text-green-700';
+                                    $labelColor = 'text-green-800';
+                                } elseif ($isRetrait) {
+                                    $icon = 'account_balance_wallet';
+                                    $iconColor = 'text-red-600';
+                                    $labelColor = 'text-red-800';
+                                } elseif ($isTransfert && $estReceveur) {
+                                    $icon = 'download';
+                                    $iconColor = 'text-green-600';
+                                    $labelColor = 'text-green-800';
+                                    $libelleAffiche = 'réception';
+                                } else {
+                                    $icon = 'send';
+                                    $iconColor = 'text-blue-600';
+                                    $labelColor = 'text-blue-800';
+                                    $libelleAffiche = 'transfert';
+                                }
+                                
+                                $libelleAffiche = $isTransfert && $estReceveur ? 'réception' : $op['libelle'];
                             ?>
                                 <tr class="transaction-enter hover:bg-surface-container transition-colors <?= $rowClass ?>" data-type="<?= esc($op['libelle']) ?>">
                                     <td class="px-sm py-md">
@@ -165,23 +204,23 @@
                                     </td>
                                     <td class="px-sm py-md">
                                         <div class="flex items-center gap-xs">
-                                            <span class="material-symbols-outlined text-sm <?= $isDepot ? 'text-green-700' : ($isRetrait ? 'text-red-600' : 'text-blue-600') ?>">
-                                                <?= $isDepot ? 'payments' : ($isRetrait ? 'account_balance_wallet' : 'send') ?>
+                                            <span class="material-symbols-outlined text-sm <?= $iconColor ?>">
+                                                <?= $icon ?>
                                             </span>
-                                            <span class="font-body-sm capitalize font-medium <?= $isDepot ? 'text-green-800' : ($isRetrait ? 'text-red-800' : 'text-blue-800') ?>">
-                                                <?= esc($op['libelle']) ?>
+                                            <span class="font-body-sm capitalize font-medium <?= $labelColor ?>">
+                                                <?= esc($libelleAffiche) ?>
                                             </span>
-                                            <!-- Badge de frais : affiché uniquement pour les transferts et si frais > 0 -->
-                                            <?php if ($frais > 0 && $isTransfert): ?>
+                                            <!-- Badge de frais : affiché uniquement pour les transferts envoyés avec frais -->
+                                            <?php if ($frais > 0 && $isTransfert && $estExpediteur): ?>
                                                 <span class="frais-badge bg-orange-100 text-orange-800 ml-xs">
                                                     +<?= number_format($frais, 0, ',', '.') ?> Ar
                                                 </span>
                                             <?php endif; ?>
                                         </div>
                                     </td>
-                                    <td class="px-sm py-md text-right font-bold <?= $isDepot ? 'text-green-700' : 'text-red-600' ?>">
-                                        <?= $isDepot ? '+' : '-' ?>
-                                        <?= number_format($op['montant'], 0, ',', '.') ?> Ar
+                                    <td class="px-sm py-md text-right font-bold <?= $textColor ?>">
+                                        <?= $signe ?>
+                                        <?= number_format($montantAffiche, 0, ',', '.') ?> Ar
                                     </td>
                                     <td class="px-sm py-md text-right text-sm text-orange-600 font-medium hidden sm:table-cell">
                                         <?php if ($frais > 0): ?>
@@ -190,8 +229,8 @@
                                             <span class="text-on-surface-variant/50">—</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="px-sm py-md text-right font-bold hidden md:table-cell <?= $isDepot ? 'text-green-700' : 'text-red-600' ?>">
-                                        <?= $isDepot ? '+' : '-' ?>
+                                    <td class="px-sm py-md text-right font-bold hidden md:table-cell <?= $isCredit ? 'text-green-700' : 'text-red-600' ?>">
+                                        <?= $signe ?>
                                         <?= number_format($totalOperation, 0, ',', '.') ?> Ar
                                     </td>
                                     <td class="px-sm py-md text-right text-sm text-on-surface-variant hidden lg:table-cell max-w-[150px] truncate">
@@ -215,7 +254,6 @@
             <?php if (!empty($transactions)): ?>
             <div class="px-sm py-md border-t border-outline-variant flex justify-between items-center text-xs text-on-surface-variant">
                 <span>Affichage de <strong><?= count($transactions) ?></strong> transaction<?= count($transactions) > 1 ? 's' : '' ?></span>
-               
             </div>
             <?php endif; ?>
         </div>
