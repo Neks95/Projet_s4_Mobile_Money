@@ -1,3 +1,4 @@
+
 CREATE TABLE operateur(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT

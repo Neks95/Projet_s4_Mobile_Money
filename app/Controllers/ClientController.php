@@ -141,7 +141,7 @@ class ClientController extends BaseController
         return redirect()->to('/client/home')->with('success', 'Retrait effectué avec succès.');
     }
 
-    public function processTransfert()
+public function processTransfert()
 {
     $session = session();
     $db = \Config\Database::connect();
@@ -153,55 +153,128 @@ class ClientController extends BaseController
     $description = $this->request->getPost('description');
     $inclureFrais = $this->request->getPost('inclure_frais_retrait') === 'on';
 
-    // 1. Gestion Multiples vs Simple : Création du tableau de numéros
     $numeros = array_map('trim', explode(',', $inputDest));
+    $numeros = array_filter($numeros, fn($n) => !empty($n));
+    $numeros = array_unique($numeros);
     $nbDest = count($numeros);
-    $montantParPersonne = $montantTotal / $nbDest;
+
+    if ($nbDest === 0) {
+        return redirect()->back()->with('error', 'Veuillez saisir au moins un numéro de destinataire.');
+    }
 
     $expediteur = $clientModel->find($session->get('client')['id']);
-    $prefixesYas = $session->get('prefixes');
+    if (!$expediteur) {
+        return redirect()->back()->with('error', 'Utilisateur non trouvé.');
+    }
 
-    // 2. Validation : Vérifier que TOUS les numéros sont internes
+    $prefixesYas = $session->get('prefixes');
+    
     $estToutInterne = true;
+    $numerosInvalides = [];
+    
     foreach ($numeros as $num) {
         $interne = false;
         foreach ($prefixesYas as $p) {
-            if (str_starts_with($num, $p)) { $interne = true; break; }
+            if (str_starts_with($num, $p)) {
+                $interne = true;
+                break;
+            }
         }
-        if (!$interne) { $estToutInterne = false; break; }
+        
+        if (!$interne) {
+            $estToutInterne = false;
+            $numerosInvalides[] = $num;
+        }
     }
 
-    // 3. Calculs Commissions
-    $fraisTransfert = $this->calculerFrais($montantTotal, 3);
-    $fraisRetrait = ($inclureFrais && $estToutInterne) ? $this->calculerFrais($montantTotal, 2) : 0;
-    $totalADebiter = $montantTotal + $fraisTransfert + $fraisRetrait;
-
-    if ($expediteur['solde'] < $totalADebiter) {
-        return redirect()->back()->with('error', 'Solde insuffisant. Total : ' . number_format($totalADebiter, 0, ',', '.') . ' Ar');
+    if ($nbDest > 1 && !$estToutInterne) {
+        $numerosStr = implode(', ', $numerosInvalides);
+        return redirect()->back()->with('error', 
+            'Transfert multiple impossible. Les numéros suivants ne sont pas Yas : ' . $numerosStr . 
+            '. Les préfixes acceptés sont : ' . implode(', ', $prefixesYas)
+        );
     }
 
-    // 4. Exécution
-    $db->transStart();
-    $clientModel->update($expediteur['id'], ['solde' => $expediteur['solde'] - $totalADebiter]);
-
+    $destinatairesExistants = [];
     foreach ($numeros as $num) {
         $destinataire = $clientModel->where('numero_telephone', $num)->first();
         
-        // Logique de crédit
-        if ($estToutInterne && $destinataire) {
-            $clientModel->update($destinataire['id'], ['solde' => $destinataire['solde'] + $montantParPersonne]);
+        if ($destinataire) {
+            $destinatairesExistants[$num] = $destinataire;
+            
+            if ($destinataire['id'] == $expediteur['id']) {
+                return redirect()->back()->with('error', 'Impossible de s\'envoyer à soi-même.');
+            }
+        } else {
+            $interne = false;
+            foreach ($prefixesYas as $p) {
+                if (str_starts_with($num, $p)) {
+                    $interne = true;
+                    break;
+                }
+            }
+            
+            if ($interne) {
+                return redirect()->back()->with('error', 
+                    'Le numéro ' . $num . ' est un client Aura (Yas) mais n\'existe pas dans notre système.'
+                );
+            }
+        }
+    }
+
+    $montantParPersonne = $montantTotal / $nbDest;
+    
+    $fraisTransfert = $this->calculerFrais($montantTotal, 3);
+    
+    $fraisRetrait = 0;
+    if ($estToutInterne && $inclureFrais) {
+        $fraisRetrait = $this->calculerFrais($montantTotal, 2);
+    }
+    
+    $totalFrais = $fraisTransfert + $fraisRetrait;
+    $totalADebiter = $montantTotal + $totalFrais;
+
+    if ($expediteur['solde'] < $totalADebiter) {
+        return redirect()->back()->with('error', 
+            'Solde insuffisant. Montant : ' . number_format($montantTotal, 0, ',', '.') . 
+            ' Ar + Frais : ' . number_format($totalFrais, 0, ',', '.') . 
+            ' Ar = ' . number_format($totalADebiter, 0, ',', '.') . ' Ar'
+        );
+    }
+
+    $db->transStart();
+
+    $clientModel->update($expediteur['id'], ['solde' => $expediteur['solde'] - $totalADebiter]);
+
+    $i = 0;
+    foreach ($numeros as $num) {
+        $i++;
+        $destinataire = $destinatairesExistants[$num] ?? null;
+        $estInterne = $destinataire !== null;
+
+        if ($estInterne) {
+            $clientModel->update($destinataire['id'], [
+                'solde' => $destinataire['solde'] + $montantParPersonne
+            ]);
         }
 
-        // Enregistrement opération (on ne met les frais que sur la première ou dernière ligne pour éviter le cumul)
+        $defaultDescription = 'Transfert';
+        if ($estInterne) {
+            $defaultDescription = 'Transfert vers ' . $destinataire['prenom'] . ' ' . $destinataire['nom'];
+        } else {
+            $defaultDescription = 'Transfert externe vers ' . $num;
+        }
+
+        $fraisOperation = ($i === 1) ? $totalFrais : 0;
+
         $opModel->save([
             'id_client1'          => $expediteur['id'],
-            'id_client2'          => ($estToutInterne && $destinataire) ? $destinataire['id'] : null,
+            'id_client2'          => $estInterne ? $destinataire['id'] : null,
             'id_type_operation'   => 3,
             'date_operation'      => date('Y-m-d H:i:s'),
             'montant'             => $montantParPersonne,
-            'frais_applique'      => ($num === end($numeros)) ? ($fraisTransfert + $fraisRetrait) : 0,
-            'description'         => !empty($description) ? $description : 'Transfert vers ' . $num,
-            'numero_destinataire' => $num
+            'frais_applique'      => $fraisOperation,
+            'description'         => !empty($description) ? $description : $defaultDescription,
         ]);
     }
 
@@ -212,7 +285,22 @@ class ClientController extends BaseController
     }
 
     $session->set('client', $clientModel->find($expediteur['id']));
-    return redirect()->to('/client/home')->with('success', 'Transfert effectué avec succès.');
+
+    if ($nbDest === 1) {
+        $num = $numeros[0];
+        $destinataire = $destinatairesExistants[$num] ?? null;
+        if ($destinataire) {
+            $message = 'Transfert de ' . number_format($montantTotal, 0, ',', '.') . ' Ar vers ' . 
+                       $destinataire['prenom'] . ' ' . $destinataire['nom'] . ' effectué avec succès.';
+        } else {
+            $message = 'Transfert externe de ' . number_format($montantTotal, 0, ',', '.') . ' Ar vers ' . $num . ' effectué.';
+        }
+    } else {
+        $message = 'Transfert multiple de ' . number_format($montantTotal, 0, ',', '.') . ' Ar vers ' . 
+                   $nbDest . ' destinataires effectué avec succès.';
+    }
+
+    return redirect()->to('/client/home')->with('success', $message);
 }
 
 
