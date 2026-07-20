@@ -14,10 +14,12 @@
         .frais-group {
             transition: all 0.3s ease;
         }
+
         .frais-group.show {
             opacity: 1;
             max-height: 200px;
         }
+
         .frais-group.hidden-custom {
             opacity: 0;
             max-height: 0;
@@ -136,13 +138,22 @@
                         <label class="block text-xs font-bold text-outline uppercase mb-xs">Description</label>
                         <input name="description" id="description-input" class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="Motif de l'opération..." type="text" />
                     </div>
-
-                    <!-- Destinataire (caché par défaut) -->
+                    <!-- Dans ton modal -->
                     <div id="destinataire-group" class="hidden">
-                        <label class="block text-xs font-bold text-outline uppercase mb-xs">Numéro Destinataire</label>
-                        <input name="destinataire" id="destinataire-input" class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="03X XX XXX XX" type="text" />
-                        <span class="text-xs text-on-surface-variant/50 mt-xs block">Format: 034 XX XXX XX</span>
+                        <label class="block text-xs font-bold text-outline uppercase mb-xs">
+                            Numéros Destinataires
+                        </label>
+                        <!-- Utilisation de textarea pour permettre la liste séparée par des virgules -->
+                        <textarea name="destinataire" id="destinataire-input"
+                            class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0"
+                            placeholder="033 XX XXX XX, 034 XX XXX XX"
+                            required></textarea>
+                        <span class="text-xs text-on-surface-variant/50 mt-xs block">
+                            Séparez les numéros par une virgule (ex: 0331234567, 0337654321)
+                        </span>
                     </div>
+
+
 
                     <!-- Frais de transfert - Visible UNIQUEMENT si le destinataire est un client Aura -->
                     <div id="frais-transfert-group" class="hidden p-sm rounded-lg" style="background: #fff8e1; border-left: 3px solid #ff9800;">
@@ -166,6 +177,29 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('destinataire-input').addEventListener('input', function() {
+    const val = this.value.replace(/\s/g, ''); // Enlève les espaces
+    if (!val) return;
+
+    const numeros = val.split(',').filter(n => n.length > 0);
+    const fraisGroup = document.getElementById('frais-transfert-group');
+    const checkbox = document.getElementById('inclure_frais_input');
+
+    // Vérifie que TOUS les numéros de la liste commencent par un préfixe autorisé
+    const tousInternes = numeros.every(num => 
+        prefixesAura.some(pref => num.startsWith(pref))
+    );
+
+    // Mise à jour de l'affichage des frais
+    if (tousInternes) {
+        fraisGroup.classList.remove('hidden');
+        checkbox.disabled = false;
+    } else {
+        fraisGroup.classList.add('hidden');
+        checkbox.checked = false; // Réinitialise si on sort du mode interne
+        checkbox.disabled = true;
+    }
+});
             // Récupération des préfixes depuis la session PHP
             const prefixesAura = <?= json_encode(session()->get('prefixes')) ?>;
 
@@ -187,7 +221,7 @@
             // Fonction pour mettre à jour l'affichage du checkbox
             function mettreAJourAffichage() {
                 if (!destInput) return;
-                
+
                 const numero = destInput.value;
                 const estValide = estClientAura(numero);
 
@@ -237,20 +271,20 @@
                     destInputEl.setAttribute('required', 'required');
                     destInputEl.value = '';
                     destInputEl.style.borderColor = '';
-                    
+
                     // Réinitialiser le checkbox (désactivé par défaut)
                     const fraisCheckbox = document.getElementById('inclure_frais_input');
                     const fraisGroupEl = document.getElementById('frais-transfert-group');
                     fraisGroupEl.classList.add('hidden');
                     fraisCheckbox.checked = false;
                     fraisCheckbox.disabled = true;
-                    
+
                 } else {
                     destGroup.classList.add('hidden');
                     destInputEl.removeAttribute('required');
                     destInputEl.value = '';
                     destInputEl.style.borderColor = '';
-                    
+
                     // Cacher le checkbox pour les autres types
                     const fraisGroupEl = document.getElementById('frais-transfert-group');
                     const fraisCheckbox = document.getElementById('inclure_frais_input');
@@ -284,6 +318,7 @@
                 }, 300);
             };
 
+            // Fermeture avec Échap
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     window.closeModal();
