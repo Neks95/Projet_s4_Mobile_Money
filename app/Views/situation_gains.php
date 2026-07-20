@@ -21,20 +21,20 @@
         </a>
 
         <h1 class="text-headline-lg text-primary mb-base">Situation des Gains</h1>
-        <p class="text-on-surface-variant font-body-sm mb-xl">Suivi des commissions et frais générés par l'activité.</p>
+        <p class="text-on-surface-variant font-body-sm mb-xl">Répartition des frais entre gain opérateur et commission reversée aux autres opérateurs.</p>
 
         <!-- Cartes des scores / KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-xl">
             <div class="bg-white p-md rounded-xl border border-outline-variant shadow-sm">
-                <span class="text-on-surface-variant font-bold text-sm block mb-xs">Gains sur Transferts</span>
-                <span class="text-headline-md font-bold text-primary"><?= number_format($gain_transfert, 0, ',', ' ') ?> Ar</span>
+                <span class="text-on-surface-variant font-bold text-sm block mb-xs">Gain Opérateur (net)</span>
+                <span class="text-headline-md font-bold text-primary"><?= number_format($gain_operateur, 0, ',', ' ') ?> Ar</span>
             </div>
             <div class="bg-white p-md rounded-xl border border-outline-variant shadow-sm">
-                <span class="text-on-surface-variant font-bold text-sm block mb-xs">Gains sur Retraits</span>
-                <span class="text-headline-md font-bold text-secondary text-emerald-600"><?= number_format($gain_retrait, 0, ',', ' ') ?> Ar</span>
+                <span class="text-on-surface-variant font-bold text-sm block mb-xs">Gains Autres Opérateurs</span>
+                <span class="text-headline-md font-bold text-emerald-600"><?= number_format($gain_autres_operateurs, 0, ',', ' ') ?> Ar</span>
             </div>
-            <div class="bg-primary text-white p-md rounded-xl shadow-sm bg-blue-600">
-                <span class="text-blue-100 font-bold text-sm block mb-xs">Gain Total Obtenu</span>
+            <div class="bg-blue-600 text-white p-md rounded-xl shadow-sm">
+                <span class="text-blue-100 font-bold text-sm block mb-xs">Frais Totaux Générés</span>
                 <span class="text-headline-md font-bold text-white"><?= number_format($gain_total, 0, ',', ' ') ?> Ar</span>
             </div>
         </div>
@@ -52,13 +52,15 @@
                             <th class="p-md">Date</th>
                             <th class="p-md">Type d'opération</th>
                             <th class="p-md text-right">Montant</th>
-                            <th class="p-md text-right text-primary">Frais / Gain</th>
+                            <th class="p-md text-right">Frais Total</th>
+                            <th class="p-md text-right text-primary">Gain Opérateur</th>
+                            <th class="p-md text-right text-emerald-600">Gain Autres Opérateurs</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant">
                         <?php if (empty($transactions)): ?>
                             <tr>
-                                <td colspan="5" class="p-xl text-center text-on-surface-variant">Aucune transaction enregistrée pour le moment.</td>
+                                <td colspan="6" class="p-xl text-center text-on-surface-variant">Aucune transaction enregistrée pour le moment.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($transactions as $txn): ?>
@@ -70,7 +72,9 @@
                                         </span>
                                     </td>
                                     <td class="p-md text-right font-medium"><?= number_format($txn['montant'], 0, ',', ' ') ?> Ar</td>
-                                    <td class="p-md text-right font-bold text-primary"><?= number_format($txn['frais_generes'], 0, ',', ' ') ?> Ar</td>
+                                    <td class="p-md text-right font-medium"><?= number_format($txn['frais_applique'], 0, ',', ' ') ?> Ar</td>
+                                    <td class="p-md text-right font-bold text-primary"><?= number_format($txn['gain_interne'], 0, ',', ' ') ?> Ar</td>
+                                    <td class="p-md text-right font-bold text-emerald-600"><?= number_format($txn['gain_externe'], 0, ',', ' ') ?> Ar</td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

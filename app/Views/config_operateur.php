@@ -19,17 +19,20 @@
             <span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Aura Finance</span>
             <div class="hidden md:flex gap-md ml-xl">
                 <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Accueil</a>
-                <a class="text-primary font-bold border-b-2 border-primary" href="#">Configuration</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Transactions</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="#">Rapports</a>
+                <a class="text-primary font-bold border-b-2 border-primary" href="<?= base_url('operateur') ?>">Configuration</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="<?= base_url('operateur/gains') ?>">Gains</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="<?= base_url('operateur/clients') ?>">Clients</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-medium" href="<?= base_url('operateur/montants-operateurs') ?>">Opérateurs</a>
             </div>
         </div>
     </header>
 
     <main class="pt-24 px-container-margin max-w-[1200px] mx-auto pb-12">
-        <div class="mb-lg">
-            <h1 class="font-headline-lg text-headline-lg text-primary mb-base">Configuration de l'Opérateur</h1>
-            <p class="text-on-surface-variant font-body-sm">Paramétrez les préfixes mobiles, types d'opérations et barèmes de frais pour Madagascar.</p>
+        <div class="mb-lg flex flex-col md:flex-row md:items-end md:justify-between gap-md">
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-primary mb-base">Configuration de l'Opérateur</h1>
+                <p class="text-on-surface-variant font-body-sm">Paramétrez les préfixes mobiles, types d'opérations et barèmes de frais pour Madagascar.</p>
+            </div>
         </div>
 
         <div class="bento-grid grid grid-cols-12 gap-6">

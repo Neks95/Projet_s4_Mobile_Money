@@ -14,7 +14,7 @@ class OperateurController extends BaseController
         $operateur = (new OperateurModel())->first();
 
         if ($operateur === null) {
-            return redirect()->to('/login')->with('error', 'Aucun opérateur configuré.');
+            return redirect()->to('/login')->with('error', 'Aucun operateur configure.');
         }
 
         session()->set([
@@ -60,7 +60,7 @@ class OperateurController extends BaseController
         $valeur = trim((string) $this->request->getPost('valeur'));
 
         if (! preg_match('/^\d{3}$/', $valeur)) {
-            return redirect()->to('/operateur')->with('error', 'Le préfixe doit contenir 3 chiffres.');
+            return redirect()->to('/operateur')->with('error', 'Le prefixe doit contenir 3 chiffres.');
         }
 
         $model = new PrefixeModel();
@@ -70,23 +70,23 @@ class OperateurController extends BaseController
             'Valeur'       => $valeur,
             'id_operateur' => $operateurId,
         ])->first()) {
-            return redirect()->to('/operateur')->with('error', 'Ce préfixe existe déjà.');
+            return redirect()->to('/operateur')->with('error', 'Ce prefixe existe deja.');
         }
 
         $model->insert([
-            'Valeur'       => $valeur,
-            'id_operateur' => $operateurId,
+            'Valeur'        => $valeur,
+            'id_operateur'  => $operateurId,
             'date_creation' => date('Y-m-d'),
         ]);
 
-        return redirect()->to('/operateur')->with('success', 'Préfixe ajouté.');
+        return redirect()->to('/operateur')->with('success', 'Prefixe ajoute.');
     }
 
     public function newBareme()
     {
         return view('form_bareme_frais', [
-            'bareme' => null,
-            'types_operation'  => (new TypeOperationModel())->findAll(),
+            'bareme'              => null,
+            'types_operation'     => (new TypeOperationModel())->findAll(),
             'type_op_selectionne' => $this->request->getGet('type_op_selectionne'),
         ]);
     }
@@ -104,9 +104,9 @@ class OperateurController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-       return view('form_bareme_frais', [
-            'bareme' => $bareme,
-            'types_operation'  => (new TypeOperationModel())->findAll(),
+        return view('form_bareme_frais', [
+            'bareme'              => $bareme,
+            'types_operation'     => (new TypeOperationModel())->findAll(),
             'type_op_selectionne' => $this->request->getGet('type_op_selectionne'),
         ]);
     }
@@ -125,7 +125,7 @@ class OperateurController extends BaseController
         }
 
         return redirect()->to('/operateur?type_op=' . ($bareme['id_type_operation'] ?? ''))
-            ->with('success', 'Barème supprimé.');
+            ->with('success', 'Bareme supprime.');
     }
 
     private function saveBareme(?int $id = null)
@@ -153,7 +153,7 @@ class OperateurController extends BaseController
 
         if ($overlap->first() !== null) {
             return redirect()->back()->withInput()
-                ->with('error', 'Cette tranche chevauche un barème existant.');
+                ->with('error', 'Cette tranche chevauche un bareme existant.');
         }
 
         $data = [
@@ -166,69 +166,88 @@ class OperateurController extends BaseController
         $id === null ? $model->insert($data) : $model->update($id, $data);
 
         return redirect()->to('/operateur?type_op=' . $typeId)
-            ->with('success', $id === null ? 'Barème créé.' : 'Barème modifié.');
+            ->with('success', $id === null ? 'Bareme cree.' : 'Bareme modifie.');
     }
 
-    public function gain()
+    public function situationGains()
     {
-        // 1. Initialisation des modèles
         $db = \Config\Database::connect();
-        $baremeModel = new \App\Models\BaremeFraisModel();
 
-        // 2. Récupération des vraies transactions réussies depuis la base
-        // (Ajustez les noms de la table 'transactions' et du champ 'statut' selon votre structure)
         $builder = $db->table('operation');
         $builder->select('operation.*, type_operation.libelle as libelle_op');
         $builder->join('type_operation', 'type_operation.id = operation.id_type_operation');
         $builder->orderBy('operation.date_operation', 'DESC');
-        $transactions = $builder->get()->getResultArray();
+        $operations = $builder->get()->getResultArray();
 
-        // 3. Récupération de tous les barèmes de frais
-        $tousLesBaremes = $baremeModel->findAll();
+        $totalGainsOperateur = 0;
+        $totalGainsAutresOperateurs = 0;
 
-        $transactionsCalculées = [];
-        $totalGainsTransfert = 0;
-        $totalGainsRetrait = 0;
+        $transactionsCalculees = [];
 
-        // 4. Calcul dynamique des gains pour chaque transaction
-        foreach ($transactions as $txn) {
-            $fraisApplique = 0;
-            $montantTxn = (float) $txn['montant'];
-            $idTypeOp = (int) $txn['id_type_operation'];
+        foreach ($operations as $op) {
+            $fraisTotaux = (float)$op['frais_applique'];
+            $commissionExt = (float)($op['commission_externe'] ?? 0.0);
 
-            // Trouver le barème dans lequel se situe le montant
-            foreach ($tousLesBaremes as $bareme) {
-                if (
-                    (int)$bareme['id_type_operation'] === $idTypeOp &&
-                    $montantTxn >= (float)$bareme['montant_min'] &&
-                    $montantTxn <= (float)$bareme['montant_max']
-                ) {
-                    $fraisApplique = (float) $bareme['frais'];
-                    break; // On a trouvé le bon barème, on sort de la boucle interne
-                }
-            }
+            $gainMaison = $fraisTotaux - $commissionExt;
+            $gainPartage = $commissionExt;
 
-            // Cumul des gains (on suppose ici que ID 1 = Transfert, ID 2 = Retrait)
-            // Si vos IDs sont différents, ajustez les chiffres ou testez sur $txn['libelle_op']
-            if ($idTypeOp === 1 || stripos($txn['libelle_op'], 'transfert') !== false) {
-                $totalGainsTransfert += $fraisApplique;
-            } else {
-                $totalGainsRetrait += $fraisApplique;
-            }
+            $totalGainsOperateur += $gainMaison;
+            $totalGainsAutresOperateurs += $gainPartage;
 
-            // On ajoute le gain calculé à la transaction pour l'affichage
-            $txn['frais_generes'] = $fraisApplique;
-            $transactionsCalculées[] = $txn;
+            $op['gain_interne'] = $gainMaison;
+            $op['gain_externe'] = $gainPartage;
+
+            $transactionsCalculees[] = $op;
         }
 
-        // 5. Envoi des données à la vue
         $data = [
-            'transactions'   => $transactionsCalculées,
-            'gain_transfert' => $totalGainsTransfert,
-            'gain_retrait'   => $totalGainsRetrait,
-            'gain_total'     => $totalGainsTransfert + $totalGainsRetrait
+            'transactions'           => $transactionsCalculees,
+            'gain_operateur'         => $totalGainsOperateur,
+            'gain_autres_operateurs' => $totalGainsAutresOperateurs,
+            'gain_total'             => $totalGainsOperateur + $totalGainsAutresOperateurs
         ];
 
         return view('situation_gains', $data);
-    }   
+    }
+
+    public function situationOperateurs()
+    {
+        $db = \Config\Database::connect();
+
+        $transferts = $db->table('operation')
+            ->where('id_type_operation', 3)
+            ->where('id_client2', null)
+            ->get()->getResultArray();
+
+        $situation = [];
+
+        foreach ($transferts as $t) {
+            $numDest = trim($t['numero_destinataire'] ?? '');
+
+            if (empty($numDest)) {
+                continue;
+            }
+
+            $prefixe = substr($numDest, 0, 3);
+            $opDest = $db->table('prefixe')->where('Valeur', $prefixe)->get()->getRowArray();
+
+            if ($opDest) {
+                $idOp = $opDest['id_operateur'];
+
+                if (!isset($situation[$idOp])) {
+                    $opData = $db->table('operateur')->where('id', $idOp)->get()->getRowArray();
+                    $situation[$idOp] = [
+                        'nom'        => $opData ? $opData['nom'] : 'Inconnu',
+                        'fonds'      => 0.0,
+                        'commission' => 0.0
+                    ];
+                }
+
+                $situation[$idOp]['fonds'] += (float)$t['montant'];
+                $situation[$idOp]['commission'] += (float)($t['commission_externe'] ?? 0.0);
+            }
+        }
+
+        return view('situation_operateurs', ['coefficients' => $situation]);
+    }
 }

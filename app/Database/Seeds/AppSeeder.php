@@ -11,6 +11,7 @@ class AppSeeder extends Seeder
         // --- 1. OPERATEURS ---
         $operateurs = [
             ['nom' => 'Yas'],
+            ['nom' => 'Orange'],
         ];
 
         $operateurIds = [];
@@ -23,6 +24,7 @@ class AppSeeder extends Seeder
         $prefixes = [
             ['date_creation' => '2026-01-01', 'operateur' => 'Yas', 'Valeur' => '033'],
             ['date_creation' => '2026-01-01', 'operateur' => 'Yas', 'Valeur' => '038'],
+            ['date_creation' => '2026-01-01', 'operateur' => 'Orange', 'Valeur' => '034'],
         ];
 
         foreach ($prefixes as $prefixe) {
@@ -139,5 +141,10 @@ class AppSeeder extends Seeder
                 'frais_applique'    => $fraisApplique
             ]);
         }
+        
+        $this->db->table('conf_transfert')->insert([
+            'id_operateur' => $operateurIds['Orange'],
+            'commission'   => 5.0
+        ]);
     }
 }
