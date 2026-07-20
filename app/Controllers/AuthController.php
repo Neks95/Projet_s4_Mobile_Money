@@ -10,6 +10,12 @@ class AuthController extends BaseController
     {
         return view('connexion');
     }
+     public function logout()
+    {
+        $session = session();
+        $session->destroy();
+        return redirect()->to('/');
+    }
 
     public function checkLogin()
     {

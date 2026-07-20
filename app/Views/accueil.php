@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <p class="text-primary font-bold">
-                            <?= ($op['libelle'] == 'dépôt') ? '+' : '-' ?>
+                            <?= ($op['libelle'] == 'depot') ? '+' : '-' ?>
                             <?= number_format($op['montant'], 0, ',', '.') ?> Ar
                         </p>
                     </div>
