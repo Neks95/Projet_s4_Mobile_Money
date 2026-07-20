@@ -10,6 +10,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <script src="<?= base_url('assets/js/tailwind-config.js') ?>"></script>
     <link href="<?= base_url('assets/css/aura-finance.css') ?>" rel="stylesheet" />
+    <style>
+        .frais-group {
+            transition: all 0.3s ease;
+        }
+
+        .frais-group.show {
+            opacity: 1;
+            max-height: 200px;
+        }
+
+        .frais-group.hidden-custom {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+        }
+    </style>
 </head>
 
 <body class="bg-background text-on-background font-body-lg overflow-x-hidden min-h-screen">
@@ -51,7 +70,6 @@
                     <span class="text-primary-container font-headline-lg text-headline-lg">Ar</span>
                 </div>
             </div>
-
         </div>
 
         <!-- Actions -->
@@ -96,9 +114,8 @@
                 <?php endforeach; ?>
             </div>
         </div>
-
-
     </main>
+
     <!-- Action Modal -->
     <div class="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center transition-opacity opacity-0 pointer-events-none p-container-margin" id="action-modal">
         <div class="bg-surface w-full max-w-md rounded-t-2xl sm:rounded-2xl p-lg transform translate-y-full transition-transform">
@@ -113,64 +130,209 @@
                 <div class="space-y-lg">
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase mb-xs">Montant (Ar)</label>
-                        <input name="montant" class="w-full text-display-lg border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="0" type="number" required />
+                        <input name="montant" id="montant-input" class="w-full text-display-lg border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="0" type="number" required />
                     </div>
 
-                    <!-- Nouveau champ Description -->
+                    <!-- Description -->
                     <div>
                         <label class="block text-xs font-bold text-outline uppercase mb-xs">Description</label>
                         <input name="description" id="description-input" class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="Motif de l'opération..." type="text" />
                     </div>
-
+                    <!-- Dans ton modal -->
                     <div id="destinataire-group" class="hidden">
-                        <label class="block text-xs font-bold text-outline uppercase mb-xs">Numéro Destinataire</label>
-                        <input name="destinataire" id="destinataire-input" class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0" placeholder="03X XX XXX XX" type="text" />
+                        <label class="block text-xs font-bold text-outline uppercase mb-xs">
+                            Numéros Destinataires
+                        </label>
+                        <!-- Utilisation de textarea pour permettre la liste séparée par des virgules -->
+                        <textarea name="destinataire" id="destinataire-input"
+                            class="w-full text-headline-sm border-none border-b-2 border-outline-variant focus:border-primary bg-transparent p-0"
+                            placeholder="033 XX XXX XX, 034 XX XXX XX"
+                            required></textarea>
+                        <span class="text-xs text-on-surface-variant/50 mt-xs block">
+                            Séparez les numéros par une virgule (ex: 0331234567, 0337654321)
+                        </span>
                     </div>
+
+
+
+                    <!-- Frais de transfert - Visible UNIQUEMENT si le destinataire est un client Aura -->
+                    <div id="frais-transfert-group" class="hidden p-sm rounded-lg" style="background: #fff8e1; border-left: 3px solid #ff9800;">
+                        <div class="flex items-center gap-sm">
+                            <input type="checkbox" name="inclure_frais_transfert" id="inclure_frais_input" class="rounded text-primary w-4 h-4" value="1">
+                            <label for="inclure_frais_input" class="text-sm font-medium text-on-surface">
+                                Les frais sont à ma charge
+                            </label>
+                        </div>
+                        <p class="text-xs text-on-surface-variant/70 mt-xs ml-6">
+                            <span class="material-symbols-outlined text-xs align-middle">info</span>
+                            Si décoché, le destinataire paiera les frais.
+                        </p>
+                    </div>
+
                     <button type="submit" class="w-full py-md bg-primary-container text-on-primary-container rounded-lg font-bold shadow-md active:scale-95 transition-all">Confirmer</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('destinataire-input').addEventListener('input', function() {
+    const val = this.value.replace(/\s/g, ''); // Enlève les espaces
+    if (!val) return;
 
-   <script>
-    function openModal(type) {
-        document.getElementById('modal-title').innerText = type;
-        document.getElementById('type_op_input').value = type;
+    const numeros = val.split(',').filter(n => n.length > 0);
+    const fraisGroup = document.getElementById('frais-transfert-group');
+    const checkbox = document.getElementById('inclure_frais_input');
 
-        const destGroup = document.getElementById('destinataire-group');
-        const destInput = document.getElementById('destinataire-input');
+    // Vérifie que TOUS les numéros de la liste commencent par un préfixe autorisé
+    const tousInternes = numeros.every(num => 
+        prefixesAura.some(pref => num.startsWith(pref))
+    );
 
-        if (type === 'transfert') {
-            destGroup.classList.remove('hidden');
-            destInput.setAttribute('required', 'required');
-        } else {
-            destGroup.classList.add('hidden');
-            destInput.removeAttribute('required');
-        }
-
-        const form = document.getElementById('action-form');
-        if (type === 'dépôt') {
-            form.action = "<?= base_url('client/depot') ?>";
-        } else if (type === 'retrait') {
-            form.action = "<?= base_url('client/retrait') ?>";
-        } else if (type === 'transfert') {
-            form.action = "<?= base_url('client/transfert') ?>";
-        }
-
-        document.getElementById('action-modal').classList.remove('opacity-0', 'pointer-events-none');
-        document.getElementById('action-modal').querySelector('div').classList.remove('translate-y-full');
+    // Mise à jour de l'affichage des frais
+    if (tousInternes) {
+        fraisGroup.classList.remove('hidden');
+        checkbox.disabled = false;
+    } else {
+        fraisGroup.classList.add('hidden');
+        checkbox.checked = false; // Réinitialise si on sort du mode interne
+        checkbox.disabled = true;
     }
+});
+            // Récupération des préfixes depuis la session PHP
+            const prefixesAura = <?= json_encode(session()->get('prefixes')) ?>;
 
-    function closeModal() {
-        document.getElementById('action-modal').classList.add('opacity-0', 'pointer-events-none');
-        document.getElementById('action-modal').querySelector('div').classList.add('translate-y-full');
-    }
-</script>
+            // Références aux éléments
+            const destInput = document.getElementById('destinataire-input');
+            const fraisGroup = document.getElementById('frais-transfert-group');
+            const checkbox = document.getElementById('inclure_frais_input');
+            const modalContent = document.getElementById('action-modal').querySelector('div');
 
-            
+            // Fonction pour vérifier si le numéro appartient à un client Aura
+            function estClientAura(numero) {
+                if (!numero || numero.length < 3) return false;
+                // Supprimer les espaces et caractères non numériques
+                const cleanNumero = numero.replace(/\s/g, '');
+                // Vérifier si le numéro commence par un des préfixes
+                return prefixesAura.some(pref => cleanNumero.startsWith(pref));
+            }
 
-        
+            // Fonction pour mettre à jour l'affichage du checkbox
+            function mettreAJourAffichage() {
+                if (!destInput) return;
+
+                const numero = destInput.value;
+                const estValide = estClientAura(numero);
+
+                if (estValide) {
+                    // Client Aura : afficher le checkbox et l'activer
+                    destInput.style.borderColor = '#4caf50';
+                    fraisGroup.classList.remove('hidden');
+                    checkbox.disabled = false;
+                    checkbox.checked = true;
+                } else if (numero.length === 0) {
+                    // Champ vide : cacher le checkbox
+                    destInput.style.borderColor = '';
+                    fraisGroup.classList.add('hidden');
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                } else {
+                    // Numéro invalide : cacher le checkbox
+                    destInput.style.borderColor = '#f44336';
+                    fraisGroup.classList.add('hidden');
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                }
+            }
+
+            // Attacher l'événement input
+            if (destInput) {
+                destInput.addEventListener('input', mettreAJourAffichage);
+                // Appel initial pour vérifier si un numéro est déjà présent
+                mettreAJourAffichage();
+            }
+
+            // Fonction pour ouvrir le modal
+            window.openModal = function(type) {
+                const title = document.getElementById('modal-title');
+                const typeInput = document.getElementById('type_op_input');
+                const destGroup = document.getElementById('destinataire-group');
+                const destInputEl = document.getElementById('destinataire-input');
+                const form = document.getElementById('action-form');
+
+                // Mise à jour du titre
+                title.innerText = type;
+                typeInput.value = type;
+
+                // Gestion de l'affichage du champ destinataire
+                if (type === 'transfert') {
+                    destGroup.classList.remove('hidden');
+                    destInputEl.setAttribute('required', 'required');
+                    destInputEl.value = '';
+                    destInputEl.style.borderColor = '';
+
+                    // Réinitialiser le checkbox (désactivé par défaut)
+                    const fraisCheckbox = document.getElementById('inclure_frais_input');
+                    const fraisGroupEl = document.getElementById('frais-transfert-group');
+                    fraisGroupEl.classList.add('hidden');
+                    fraisCheckbox.checked = false;
+                    fraisCheckbox.disabled = true;
+
+                } else {
+                    destGroup.classList.add('hidden');
+                    destInputEl.removeAttribute('required');
+                    destInputEl.value = '';
+                    destInputEl.style.borderColor = '';
+
+                    // Cacher le checkbox pour les autres types
+                    const fraisGroupEl = document.getElementById('frais-transfert-group');
+                    const fraisCheckbox = document.getElementById('inclure_frais_input');
+                    fraisGroupEl.classList.add('hidden');
+                    fraisCheckbox.checked = false;
+                    fraisCheckbox.disabled = true;
+                }
+
+                // Mise à jour de l'action du formulaire
+                const actions = {
+                    'dépôt': "<?= base_url('client/depot') ?>",
+                    'retrait': "<?= base_url('client/retrait') ?>",
+                    'transfert': "<?= base_url('client/transfert') ?>"
+                };
+                form.action = actions[type] || '';
+
+                // Ouvrir le modal avec animation
+                const modal = document.getElementById('action-modal');
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    modalContent.classList.remove('translate-y-full');
+                }, 10);
+            };
+
+            // Fonction pour fermer le modal
+            window.closeModal = function() {
+                const modal = document.getElementById('action-modal');
+                modalContent.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                }, 300);
+            };
+
+            // Fermeture avec Échap
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    window.closeModal();
+                }
+            });
+
+            document.getElementById('action-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    window.closeModal();
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>

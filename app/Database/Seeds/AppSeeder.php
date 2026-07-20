@@ -11,7 +11,7 @@ class AppSeeder extends Seeder
         // --- 1. OPERATEURS ---
         $operateurs = [
             ['nom' => 'Yas'],
-            ['nom' => 'Orange'],
+            ['nom' => 'Orange']
         ];
 
         $operateurIds = [];
@@ -24,7 +24,8 @@ class AppSeeder extends Seeder
         $prefixes = [
             ['date_creation' => '2026-01-01', 'operateur' => 'Yas', 'Valeur' => '033'],
             ['date_creation' => '2026-01-01', 'operateur' => 'Yas', 'Valeur' => '038'],
-            ['date_creation' => '2026-01-01', 'operateur' => 'Orange', 'Valeur' => '034'],
+            ['date_creation' => '2026-01-01', 'operateur' => 'Orange', 'Valeur' => '037'],
+            ['date_creation' => '2026-01-01', 'operateur' => 'Orange', 'Valeur' => '032'],
         ];
 
         foreach ($prefixes as $prefixe) {
@@ -94,18 +95,27 @@ class AppSeeder extends Seeder
 
         // --- 5. BAREMES DE FRAIS (Retrait Cash) ---
         $baremes = [
-            ['montant_min' => 0,     'montant_max' => 5000,   'frais' => 150],
-            ['montant_min' => 5001,  'montant_max' => 10000,  'frais' => 300],
-            ['montant_min' => 10001, 'montant_max' => 50000,  'frais' => 1200],
-            ['montant_min' => 50001, 'montant_max' => 100000, 'frais' => 2500],
+            // Barèmes pour RETRAIT (id_type_operation = 2)
+            ['montant_min' => 0,     'montant_max' => 5000,   'frais' => 150,  'type' => 'retrait'],
+            ['montant_min' => 5001,  'montant_max' => 10000,  'frais' => 300,  'type' => 'retrait'],
+            ['montant_min' => 10001, 'montant_max' => 50000,  'frais' => 1200, 'type' => 'retrait'],
+            ['montant_min' => 50001, 'montant_max' => 100000, 'frais' => 2500, 'type' => 'retrait'],
+
+            // Barèmes pour TRANSFERT (id_type_operation = 3)
+            ['montant_min' => 0,     'montant_max' => 10000,  'frais' => 100,  'type' => 'transfert'],
+            ['montant_min' => 10001, 'montant_max' => 50000,  'frais' => 200,  'type' => 'transfert'],
+            ['montant_min' => 50001, 'montant_max' => 100000, 'frais' => 500,  'type' => 'transfert'],
+            ['montant_min' => 100001, 'montant_max' => 500000, 'frais' => 1000, 'type' => 'transfert'],
         ];
+
+
 
         foreach ($baremes as $bareme) {
             $this->db->table('bareme_frais')->insert([
                 'montant_min'       => $bareme['montant_min'],
                 'montant_max'       => $bareme['montant_max'],
                 'frais'             => $bareme['frais'],
-                'id_type_operation' => $typeOperationIds['retrait'],
+                'id_type_operation' => $typeOperationIds[$bareme['type']],
             ]);
         }
 

@@ -10,7 +10,8 @@ Tsiky
 
 ---
 
-## `Côté client`
+## `Côté client` , V1
+
 
 ### 1) Login automatique avec numéro de téléphone
 
@@ -40,7 +41,7 @@ Tsiky
 
 ### 5) historique
 * Creation d'une fonction historique dans CLientController pour prendres tous les operations lies au compte dans la session
-* Ajout de route historique et d'un lien dans accueil qui va rediriger la bas1
+* Ajout de route historique et d'un lien dans accueil qui va rediriger la bas
 
 ## 6) transfert
 * Creation de route /client/depot pour traiter le depot
@@ -48,6 +49,16 @@ Tsiky
 * handling des frais , methode dans ClientController
 
 
+## `Côté client` , V2
+* Mettre les prefixes dans la session lors de la connexion
+  -Creation de PrefixeModel ( id = 1 pour Yas)
+  -fonction getPrefixes()
+  -nom session , 'prefixes'
+* Ajout de checkbox dans acceuil
+  -lors du de l'input on verfie si le prefixe est dans le session (js)
+    -si oui : active l'input
+    -si non : cache l'input
+* Modification de processTransfert : ajouter le frais de retrait correspondant au montant dans totalAdebiter si client de notre operateur
 
 
 
