@@ -38,7 +38,7 @@
                         <label class="block text-xs font-bold text-outline mb-base uppercase tracking-wider" for="phone">Numéro de téléphone</label>
                         <div class="flex items-center border-b-2 border-outline-variant focus-within:border-primary transition-all pb-base">
                             <input class="bg-transparent border-none focus:ring-0 w-full font-numeric-data text-numeric-data p-0"
-                                id="phone" maxlength="10" name="numero_telephone" placeholder="0330000000" required type="tel" />
+                                id="phone" maxlength="10" name="numero_telephone" placeholder="0337788899" required type="tel" />
                         </div>
                         <p class="text-error text-xs mt-base hidden" id="phone-error">Numéro invalide.</p>
                     </div>

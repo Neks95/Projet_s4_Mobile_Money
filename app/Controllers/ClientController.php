@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 use App\Models\ClientModel;
 use App\Models\OperationModel;
-use App\Models\EpargneModel;
-
 
 
 class ClientController extends BaseController
@@ -17,7 +15,6 @@ class ClientController extends BaseController
 
         $clientModel = new ClientModel();
         $opModel = new OperationModel();
-        $epargneModel = new EpargneModel();
 
         $clientInfo = $clientModel->find($client['id']);
 
@@ -25,25 +22,8 @@ class ClientController extends BaseController
 
         return view('accueil', [
             'client' => $clientInfo,
-            'activites' => $activites,
+            'activites' => $activites
         ]);
-    }
-
-    public function processEpargne()
-    {
-        $session = session();
-        $clientId = session()->get('client')['id'];
-
-        $model = new EpargneModel();
-        $valeur = $this->request->getPost('valeur');
-
-        $model->save([
-            'id_client' => $clientId,
-            'valeur' => $valeur,
-            'solde_epargne' => 0,
-        ]);
-
-        return redirect()->to('/client/home')->with('success', 'Valeur epargne enregistre avec succes !.');
     }
 
     public function historique()
@@ -167,7 +147,6 @@ class ClientController extends BaseController
         $db = \Config\Database::connect();
         $clientModel = new ClientModel();
         $opModel = new OperationModel();
-        $epargneModel = new EpargneModel();
 
         $montantTotal = (float)$this->request->getPost('montant');
         $inputDest = $this->request->getPost('destinataire');
@@ -249,15 +228,12 @@ class ClientController extends BaseController
         }
 
         $montantParPersonne = $montantTotal / $nbDest;
+
         $fraisTransfert = $this->calculerFrais($montantTotal, 3);
-        $promo = $this->calculerPromotion($fraisTransfert);
 
         $fraisRetrait = 0;
-        if ($estToutInterne) {
-            $fraisTransfert = $fraisTransfert - $promo;
-            if ($inclureFrais) {
-                $fraisRetrait = $this->calculerFrais($montantTotal, 2);
-            }
+        if ($estToutInterne && $inclureFrais) {
+            $fraisRetrait = $this->calculerFrais($montantTotal, 2);
         }
 
         // Commission externe : dépend de l'opérateur destinataire (conf_transfert), calculée au moment
@@ -301,15 +277,6 @@ class ClientController extends BaseController
             $i++;
             $destinataire = $destinatairesExistants[$num] ?? null;
             $estInterne = $destinataire !== null;
-            $estEpargne = $epargneModel->isEpargned($destinataire['id']);
-            if ($estEpargne > 0) {
-                $valeur = $epargneModel->calculerMontantEpargne($destinataire['id'], $montantParPersonne);
-                $montantParPersonne = $montantParPersonne - $valeur;
-                $nouveau_solde_epargne = $epargneModel->getSolde($destinataire['id']) + $valeur;
-                $epargneModel->update([
-                    'solde_epargne' => $nouveau_solde_epargne,
-                ]);
-            }
 
             if ($estInterne) {
                 $clientModel->update($destinataire['id'], [
@@ -388,15 +355,6 @@ class ClientController extends BaseController
         $taux = $conf ? (float)$conf['comission'] : 0.0;
 
         return ($montant * $taux) / 100;
-    }
-
-    private function calculerPromotion(float $frais): float
-    {
-        $db = \Config\Database::connect();
-        $conf = $db->table('promotion')->get()->getRowArray();
-        $taux = $conf ? (float)$conf['pourcentage'] : 0.0;
-
-        return ($frais * $taux) / 100;
     }
 
     public function situationClients()
