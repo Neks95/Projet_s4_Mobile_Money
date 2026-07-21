@@ -18,6 +18,7 @@ $routes->post('depot','ClientController::processDepot');
 $routes->post('retrait','ClientController::processRetrait');
 $routes->post('transfert', 'ClientController::processTransfert');
 $routes->get('historique', 'ClientController::historique');
+$routes->post('epargne', 'ClientController::processEpargne');
 });
 
 $routes->get('operateur/login', 'OperateurController::login');

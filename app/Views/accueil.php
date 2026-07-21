@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="light" lang="fr">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -7,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-        <link href="<?= base_url('assets/css/aura-finance.css') ?>" rel="stylesheet" />
+    <link href="<?= base_url('assets/css/aura-finance.css') ?>" rel="stylesheet" />
     <script src="<?= base_url('assets/js/tailwind-config.js') ?>"></script>
 </head>
 
@@ -39,6 +40,8 @@
                 <span class="text-primary-container font-display-lg text-display-lg"><?= number_format($client['solde'], 0, ',', '.') ?></span>
                 <span class="text-primary-container font-headline-lg text-headline-lg">Ar</span>
             </div>
+         
+
         </div>
 
         <!-- Actions -->
@@ -56,6 +59,7 @@
                 <span class="text-label-caps">Transfert</span>
             </button>
         </div>
+
 
         <!-- Activités Récentes -->
         <div class="mt-lg">
@@ -116,6 +120,13 @@
             </form>
         </div>
     </div>
+    <div class="mt-lg">
+        <h1>Valeur epargne</h1>
+        <form action="<?= base_url('client/epargne') ?>" method="post">
+            <input type="number" name="valeur">
+            <input type="submit" value="valider">
+        </form>
+    </div>
 
     <script>
         const prefixesAura = <?= json_encode(session()->get('prefixes') ?? []) ?>;
@@ -142,14 +153,14 @@
 
         window.openModal = function(type) {
             document.getElementById('modal-title').innerText = type;
-            
+
             const actions = {
                 'dépôt': "<?= base_url('client/depot') ?>",
                 'retrait': "<?= base_url('client/retrait') ?>",
                 'transfert': "<?= base_url('client/transfert') ?>"
             };
             document.getElementById('action-form').action = actions[type] || '';
-            
+
             const destGroup = document.getElementById('destinataire-group');
             if (type === 'transfert') {
                 destGroup.classList.remove('hidden');
@@ -161,7 +172,7 @@
                 checkbox.checked = false;
                 checkbox.disabled = true;
             }
-            
+
             modal.classList.remove('opacity-0', 'pointer-events-none');
             setTimeout(() => modalContent.classList.remove('translate-y-full'), 10);
         };
@@ -172,4 +183,5 @@
         };
     </script>
 </body>
+
 </html>

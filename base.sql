@@ -47,3 +47,5 @@ CREATE TABLE operation(
     FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
 );
 
+
+

@@ -79,7 +79,12 @@ C'est un changement logique important : si tu souhaites **restreindre** le trans
 
 
 
+## alea2
+epargne : n% (apidirina interface)
+rehefa vola TRANSFERT -> n% makany amin'epargne  , ambony solde .
 
-
-
+* Creation de table epargne : (ok)
+  -valeur_epargne (%)
+  -solde_epargne actuel
+* Creattion model epargne 
 

@@ -63,3 +63,11 @@ CREATE TABLE promotion(
     pourcentage REAL
 );
 
+CREATE TABLE epargne(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_client INTEGER ,
+    valeur REAL,
+    solde_epargne REAL,
+    FOREIGN KEY (id_client) REFERENCES client(id)
+);
+
