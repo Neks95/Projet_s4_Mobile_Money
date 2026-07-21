@@ -43,11 +43,12 @@ CREATE TABLE operation(
     id_type_operation INTEGER,
     date_operation TEXT,
     montant REAL,
-    frais_applique REAL ,
-    description REAL ,
-    FOREIGN KEY (id_client1) REFERENCES client(id),
-    FOREIGN KEY (id_client2) REFERENCES client(id),
-    FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
+    frais_applique REAL,
+    commission_externe REAL DEFAULT 0,
+    description TEXT,
+FOREIGN KEY (id_client1) REFERENCES client(id),
+FOREIGN KEY (id_client2) REFERENCES client(id),
+FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
 );
 
 CREATE TABLE conf_transfert(

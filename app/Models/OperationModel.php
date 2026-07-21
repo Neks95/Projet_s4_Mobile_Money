@@ -11,8 +11,9 @@ class OperationModel extends Model {
         'id_type_operation', 
         'date_operation', 
         'montant',
-        'description' ,
-        'frais_applique'
+        'description', 
+        'frais_applique',
+        'commission_externe'
     ];
 
     public function getRecentes($idClient, $limit = 5) {
@@ -28,6 +29,4 @@ class OperationModel extends Model {
 }
     
   
-}
-
-?>
+} 

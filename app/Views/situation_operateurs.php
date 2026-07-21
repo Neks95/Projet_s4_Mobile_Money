@@ -20,8 +20,8 @@
             Retour à la configuration
         </a>
 
-        <h1 class="text-headline-lg text-primary mb-base">Montants à Envoyer aux Opérateurs</h1>
-        <p class="text-on-surface-variant font-body-sm mb-xl">Fonds dus à chaque opérateur externe suite aux transferts sortants, et commissions associées.</p>
+        <h1 class="text-headline-lg text-primary mb-base">Commissions Dues aux Opérateurs</h1>
+        <p class="text-on-surface-variant font-body-sm mb-xl">Le principal transféré n'est ni ton argent ni celui de l'opérateur externe : seule la commission d'interconnexion lui est réellement due.</p>
 
         <?php
             $totalFonds = 0.0;
@@ -35,12 +35,12 @@
         <!-- Cartes des scores / KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-md mb-xl">
             <div class="bg-blue-600 text-white p-md rounded-xl shadow-sm">
-                <span class="text-blue-100 font-bold text-sm block mb-xs">Total à Envoyer</span>
-                <span class="text-headline-md font-bold text-white"><?= number_format($totalFonds, 0, ',', ' ') ?> Ar</span>
+                <span class="text-blue-100 font-bold text-sm block mb-xs">Total Commission Due</span>
+                <span class="text-headline-md font-bold text-white"><?= number_format($totalCommission, 0, ',', ' ') ?> Ar</span>
             </div>
             <div class="bg-white p-md rounded-xl border border-outline-variant shadow-sm">
-                <span class="text-on-surface-variant font-bold text-sm block mb-xs">Commissions Dues</span>
-                <span class="text-headline-md font-bold text-emerald-600"><?= number_format($totalCommission, 0, ',', ' ') ?> Ar</span>
+                <span class="text-on-surface-variant font-bold text-sm block mb-xs">Volume Transféré (info)</span>
+                <span class="text-headline-md font-bold text-on-surface-variant"><?= number_format($totalFonds, 0, ',', ' ') ?> Ar</span>
             </div>
             <div class="bg-white p-md rounded-xl border border-outline-variant shadow-sm">
                 <span class="text-on-surface-variant font-bold text-sm block mb-xs">Nombre d'Opérateurs</span>
@@ -59,23 +59,21 @@
                     <thead>
                         <tr class="bg-slate-50 border-b border-outline-variant text-on-surface-variant text-sm font-bold">
                             <th class="p-md">Opérateur</th>
-                            <th class="p-md text-right">Fonds Transférés</th>
-                            <th class="p-md text-right">Commission Due</th>
-                            <th class="p-md text-right text-primary">Montant Net à Envoyer</th>
+                            <th class="p-md text-right text-on-surface-variant">Volume Transféré (info)</th>
+                            <th class="p-md text-right text-primary">Commission Due</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant">
                         <?php if (empty($coefficients)): ?>
                             <tr>
-                                <td colspan="4" class="p-xl text-center text-on-surface-variant">Aucun transfert externe enregistré pour le moment.</td>
+                                <td colspan="3" class="p-xl text-center text-on-surface-variant">Aucun transfert externe enregistré pour le moment.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($coefficients as $c): ?>
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="p-md font-medium"><?= esc($c['nom']) ?></td>
-                                    <td class="p-md text-right"><?= number_format($c['fonds'], 0, ',', ' ') ?> Ar</td>
-                                    <td class="p-md text-right text-emerald-600"><?= number_format($c['commission'], 0, ',', ' ') ?> Ar</td>
-                                    <td class="p-md text-right font-bold text-primary"><?= number_format($c['fonds'] - $c['commission'], 0, ',', ' ') ?> Ar</td>
+                                    <td class="p-md text-right text-on-surface-variant"><?= number_format($c['fonds'], 0, ',', ' ') ?> Ar</td>
+                                    <td class="p-md text-right font-bold text-primary"><?= number_format($c['commission'], 0, ',', ' ') ?> Ar</td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

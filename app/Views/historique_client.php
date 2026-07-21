@@ -119,7 +119,8 @@
                     } elseif ($op['libelle'] == 'transfert') {
                         $totalTransferts += $op['montant'];
                     }
-                    $totalFrais += $op['frais_applique'] ?? 0;
+                    // Le coût réel d'une opération inclut les frais ET la commission externe éventuelle
+                    $totalFrais += ($op['frais_applique'] ?? 0) + ($op['commission_externe'] ?? 0);
                 }
             ?>
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-sm mt-md">
@@ -201,7 +202,8 @@
                                 $textColor = $isCredit ? 'text-green-700' : 'text-red-600';
                                 $signe = $isCredit ? '+' : '-';
                                 $montantAffiche = $op['montant'];
-                                $frais = $op['frais_applique'] ?? 0;
+                                // Le coût total de l'opération = frais applique + commission externe (si transfert vers un autre operateur)
+                                $frais = ($op['frais_applique'] ?? 0) + ($op['commission_externe'] ?? 0);
                                 $totalOperation = $isCredit ? $montantAffiche : ($montantAffiche + $frais);
 
                                 // Déterminer l'icône et la couleur
@@ -240,7 +242,7 @@
                                             <span class="font-body-sm capitalize font-medium <?= $labelColor ?>">
                                                 <?= esc($libelleAffiche) ?>
                                             </span>
-                                            <!-- Badge de frais : affiché uniquement pour les transferts envoyés avec frais -->
+                                            <!-- Badge de frais (inclut la commission externe) : affiché uniquement pour les transferts envoyés avec cout -->
                                             <?php if ($frais > 0 && $isTransfert && $estExpediteur): ?>
                                                 <span class="frais-badge bg-orange-100 text-orange-800 ml-xs">
                                                     +<?= number_format($frais, 0, ',', '.') ?> Ar

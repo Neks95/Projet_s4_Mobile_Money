@@ -185,10 +185,13 @@ class OperateurController extends BaseController
         $transactionsCalculees = [];
 
         foreach ($operations as $op) {
-            $fraisTotaux = (float)$op['frais_applique'];
+            $fraisBase = (float)$op['frais_applique'];
             $commissionExt = (float)($op['commission_externe'] ?? 0.0);
 
-            $gainMaison = $fraisTotaux - $commissionExt;
+            // Le gain de l'opérateur est uniquement le frais de base : la commission
+            // n'est jamais son argent, elle est collectée chez le client spécifiquement
+            // pour être intégralement reversée à l'autre opérateur.
+            $gainMaison = $fraisBase;
             $gainPartage = $commissionExt;
 
             $totalGainsOperateur += $gainMaison;
@@ -214,26 +217,40 @@ class OperateurController extends BaseController
     {
         $db = \Config\Database::connect();
 
+        // 1. Récupérer tous les transferts externes (id_client2 IS NULL)
         $transferts = $db->table('operation')
             ->where('id_type_operation', 3)
             ->where('id_client2', null)
             ->get()->getResultArray();
 
+        // 2. Charger tous les préfixes
+        $prefixesList = $db->table('prefixe')->get()->getResultArray();
+
         $situation = [];
 
         foreach ($transferts as $t) {
-            $numDest = trim($t['numero_destinataire'] ?? '');
+            $description = $t['description'] ?? '';
 
-            if (empty($numDest)) {
+            // Capture n'importe quelle suite de 8 à 10 chiffres (plus souple que 10 stricts)
+            if (!preg_match('/(0\d{7,9})/', $description, $matches)) {
                 continue;
             }
 
-            $prefixe = substr($numDest, 0, 3);
-            $opDest = $db->table('prefixe')->where('Valeur', $prefixe)->get()->getRowArray();
+            $numDest = $matches[1];
 
-            if ($opDest) {
-                $idOp = $opDest['id_operateur'];
+            $idOp = null;
+            foreach ($prefixesList as $p) {
+                // Support de 'valeur' ou 'Valeur' selon la BDD
+                $valeurPrefixe = $p['valeur'] ?? $p['Valeur'] ?? '';
+                $idOperateurPrefixe = $p['id_operateur'] ?? $p['id_operateur'] ?? null;
 
+                if (!empty($valeurPrefixe) && str_starts_with($numDest, $valeurPrefixe)) {
+                    $idOp = $idOperateurPrefixe;
+                    break;
+                }
+            }
+
+            if ($idOp) {
                 if (!isset($situation[$idOp])) {
                     $opData = $db->table('operateur')->where('id', $idOp)->get()->getRowArray();
                     $situation[$idOp] = [
@@ -244,7 +261,8 @@ class OperateurController extends BaseController
                 }
 
                 $situation[$idOp]['fonds'] += (float)$t['montant'];
-                $situation[$idOp]['commission'] += (float)($t['commission_externe'] ?? 0.0);
+                // Récupère commission_externe ou retombe sur le gain_externe calculé
+                $situation[$idOp]['commission'] += (float)($t['commission_externe'] ?? $t['frais_applique'] ?? 0.0);
             }
         }
 
