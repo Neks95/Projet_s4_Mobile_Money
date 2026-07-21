@@ -1,326 +1,351 @@
 <!DOCTYPE html>
+<html class="light" lang="fr">
 
-<html class="light" lang="fr"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Aura Finance - Historique des Transactions</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-tertiary-container": "#506076",
-                        "on-secondary": "#ffffff",
-                        "on-secondary-fixed": "#131b2e",
-                        "on-tertiary-fixed-variant": "#38485d",
-                        "inverse-on-surface": "#eff1f3",
-                        "on-surface": "#191c1e",
-                        "error-container": "#ffdad6",
-                        "secondary-fixed-dim": "#bec6e0",
-                        "surface-variant": "#e0e3e5",
-                        "surface-tint": "#705d00",
-                        "secondary-fixed": "#dae2fd",
-                        "on-secondary-container": "#5c647a",
-                        "inverse-primary": "#e9c400",
-                        "on-primary": "#ffffff",
-                        "on-error": "#ffffff",
-                        "tertiary-container": "#cadbf5",
-                        "surface-container-lowest": "#ffffff",
-                        "primary-fixed": "#ffe16d",
-                        "background": "#f7f9fb",
-                        "on-primary-fixed-variant": "#544600",
-                        "surface-bright": "#f7f9fb",
-                        "on-primary-fixed": "#221b00",
-                        "primary-fixed-dim": "#e9c400",
-                        "surface-dim": "#d8dadc",
-                        "on-tertiary-fixed": "#0b1c30",
-                        "on-tertiary": "#ffffff",
-                        "on-secondary-fixed-variant": "#3f465c",
-                        "primary": "#705d00",
-                        "surface": "#f7f9fb",
-                        "tertiary-fixed-dim": "#b7c8e1",
-                        "outline-variant": "#d0c6ab",
-                        "secondary": "#565e74",
-                        "outline": "#7e775f",
-                        "surface-container-high": "#e6e8ea",
-                        "on-surface-variant": "#4d4732",
-                        "on-error-container": "#93000a",
-                        "secondary-container": "#dae2fd",
-                        "surface-container-highest": "#e0e3e5",
-                        "tertiary-fixed": "#d3e4fe",
-                        "surface-container-low": "#f2f4f6",
-                        "error": "#ba1a1a",
-                        "surface-container": "#eceef0",
-                        "inverse-surface": "#2d3133",
-                        "on-background": "#191c1e",
-                        "primary-container": "#ffd700",
-                        "on-primary-container": "#705e00",
-                        "tertiary": "#505f76"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xs": "8px",
-                        "lg": "32px",
-                        "sm": "16px",
-                        "md": "24px",
-                        "xl": "48px",
-                        "container-margin": "20px",
-                        "base": "4px",
-                        "gutter": "12px"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "label-caps": ["Inter"],
-                        "headline-lg-mobile": ["Inter"],
-                        "numeric-data": ["Inter"],
-                        "title-md": ["Inter"],
-                        "display-lg": ["Inter"],
-                        "body-sm": ["Inter"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
-                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "numeric-data": ["24px", {"lineHeight": "24px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
-                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
-                    }
-                }
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Aura Finance - Historique</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script src="<?= base_url('assets/js/tailwind-config.js') ?>"></script>
+    <link href="<?= base_url('assets/css/aura-finance.css') ?>" rel="stylesheet" />
+    <style>
+        .transaction-enter {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+        .transaction-enter:nth-child(1) {
+            animation-delay: 0.05s;
         }
-        .transaction-row:nth-child(even) {
-            background-color: rgba(236, 238, 240, 0.4);
+
+        .transaction-enter:nth-child(2) {
+            animation-delay: 0.10s;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f9fb;
+
+        .transaction-enter:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .transaction-enter:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .transaction-enter:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .transaction-enter:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+
+        .transaction-enter:nth-child(7) {
+            animation-delay: 0.35s;
+        }
+
+        .transaction-enter:nth-child(8) {
+            animation-delay: 0.40s;
+        }
+
+        .transaction-enter:nth-child(9) {
+            animation-delay: 0.45s;
+        }
+
+        .transaction-enter:nth-child(10) {
+            animation-delay: 0.50s;
+        }
+
+        .frais-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            display: inline-block;
+            font-weight: 600;
         }
     </style>
 </head>
-<body class="bg-surface text-on-surface">
-<!-- TopAppBar -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-xs shadow-sm bg-surface">
-<div class="flex items-center gap-sm">
-<a class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary" href="#">Aura Finance</a>
-</div>
-<div class="flex items-center gap-sm">
-<button class="hidden md:flex px-sm py-base bg-primary-container text-on-primary-container font-medium rounded-lg hover:bg-opacity-90 transition-all active:scale-95">
-                Switch Role
+
+<body class="bg-surface text-on-surface min-h-screen">
+
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin py-xs shadow-sm bg-surface">
+        <div class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Aura Finance</div>
+        <div class="flex items-center gap-sm">
+            <a class="material-symbols-outlined text-secondary hover:bg-surface-container-high transition-colors p-base rounded-full" href="<?= base_url('logout') ?>">logout</a>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-32 px-container-margin max-w-6xl mx-auto">
+        <div class="mb-lg">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-sm">
+                <div>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Historique</h1>
+                    <p class="text-on-surface-variant">Suivez toutes vos opérations en temps réel.</p>
+                </div>
+                <div class="flex gap-sm">
+                    <button onclick="window.location.reload()" class="flex items-center gap-xs px-md py-sm bg-surface-container-high rounded-lg hover:bg-surface-container transition-colors">
+                        <span class="material-symbols-outlined text-sm">refresh</span>
+                        <span class="text-sm font-medium hidden sm:inline">Actualiser</span>
+                    </button>
+                    <a href="<?= base_url('client/home') ?>" class="flex items-center gap-xs px-md py-sm bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity">
+                        <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        <span class="text-sm font-medium hidden sm:inline">Retour</span>
+                    </a>
+                </div>
+            </div>
+
+            <?php if (!empty($transactions)):
+                $totalDepots = 0;
+                $totalRetraits = 0;
+                $totalTransferts = 0;
+                $totalFrais = 0;
+                $clientId = session()->get('client')['id'];
+                foreach ($transactions as $op) {
+                    if ($op['libelle'] == 'depot') {
+                        $totalDepots += $op['montant'];
+                    } elseif ($op['libelle'] == 'retrait') {
+                        $totalRetraits += $op['montant'];
+                    } elseif ($op['libelle'] == 'transfert') {
+                        $totalTransferts += $op['montant'];
+                    }
+                    // Le coût réel d'une opération inclut les frais ET la commission externe éventuelle
+                    $totalFrais += ($op['frais_applique'] ?? 0) + ($op['commission_externe'] ?? 0);
+                }
+            ?>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-sm mt-md">
+                    <div class="bg-green-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-green-700 font-medium uppercase">Total Dépôts</div>
+                        <div class="text-lg font-bold text-green-800"><?= number_format($totalDepots, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-red-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-red-700 font-medium uppercase">Total Retraits</div>
+                        <div class="text-lg font-bold text-red-800"><?= number_format($totalRetraits, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-blue-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-blue-700 font-medium uppercase">Total Transferts</div>
+                        <div class="text-lg font-bold text-blue-800"><?= number_format($totalTransferts, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-orange-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-orange-700 font-medium uppercase">Total Frais</div>
+                        <div class="text-lg font-bold text-orange-800"><?= number_format($totalFrais, 0, ',', '.') ?> Ar</div>
+                    </div>
+                    <div class="bg-purple-50 p-sm rounded-lg text-center">
+                        <div class="text-xs text-purple-700 font-medium uppercase">Total Opérations</div>
+                        <div class="text-lg font-bold text-purple-800"><?= count($transactions) ?></div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Filtres -->
+        <div class="flex flex-wrap gap-sm mb-md">
+            <button onclick="filterTable('all')" class="filter-btn px-md py-sm rounded-full bg-primary text-on-primary text-sm font-medium transition-all" data-filter="all">
+                Tous
             </button>
-<div class="flex gap-xs">
-<button class="p-base rounded-full hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-</button>
-<button class="p-base rounded-full hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
-</button>
-</div>
-</div>
-</header>
-<main class="pt-xl pb-32 px-container-margin max-w-5xl mx-auto mt-lg">
-<!-- Header Section with Back Button -->
-<div class="flex flex-col md:flex-row md:items-end justify-between mb-lg gap-md">
-<div>
-<a class="inline-flex items-center text-primary font-medium hover:underline mb-sm transition-transform active:scale-95" href="#">
-<span class="material-symbols-outlined mr-xs">arrow_back</span>
-                    Retour au portail
-                </a>
-<h1 class="font-headline-lg text-headline-lg text-on-surface">Historique des Transactions</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant mt-xs">Suivez vos opérations financières en temps réel.</p>
-</div>
-<!-- Filter Chips -->
-<div class="flex gap-xs overflow-x-auto pb-base no-scrollbar">
-<button class="px-md py-xs bg-primary text-on-primary rounded-full font-label-caps text-label-caps whitespace-nowrap">TOUT</button>
-<button class="px-md py-xs bg-surface-container-high text-on-surface-variant rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-primary-container transition-colors">DÉPÔTS</button>
-<button class="px-md py-xs bg-surface-container-high text-on-surface-variant rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-primary-container transition-colors">RETRAITS</button>
-<button class="px-md py-xs bg-surface-container-high text-on-surface-variant rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-primary-container transition-colors">TRANSFERTS</button>
-</div>
-</div>
-<!-- Transactions Table Container -->
-<div class="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-primary text-on-primary">
-<th class="px-sm py-md font-label-caps text-label-caps uppercase tracking-wider">Date &amp; Heure</th>
-<th class="px-sm py-md font-label-caps text-label-caps uppercase tracking-wider">Type</th>
-<th class="px-sm py-md font-label-caps text-label-caps uppercase tracking-wider">Destinataire</th>
-<th class="px-sm py-md font-label-caps text-label-caps uppercase tracking-wider text-right">Frais</th>
-<th class="px-sm py-md font-label-caps text-label-caps uppercase tracking-wider text-right">Montant</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant">
-<!-- Transaction Row 1 -->
-<tr class="transaction-row hover:bg-surface-container transition-colors">
-<td class="px-sm py-md">
-<div class="font-body-sm text-body-sm text-on-surface">12 Oct 2023</div>
-<div class="text-[12px] text-on-surface-variant">14:25</div>
-</td>
-<td class="px-sm py-md">
-<div class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">send</span>
-<span class="font-body-sm text-body-sm">Transfert</span>
-</div>
-</td>
-<td class="px-sm py-md font-numeric-data text-[16px] text-on-surface">034 56 789 01</td>
-<td class="px-sm py-md text-right font-body-sm text-body-sm text-secondary">250 Ar</td>
-<td class="px-sm py-md text-right font-numeric-data text-body-lg text-error">- 15 000 Ar</td>
-</tr>
-<!-- Transaction Row 2 -->
-<tr class="transaction-row hover:bg-surface-container transition-colors">
-<td class="px-sm py-md">
-<div class="font-body-sm text-body-sm text-on-surface">10 Oct 2023</div>
-<div class="text-[12px] text-on-surface-variant">09:12</div>
-</td>
-<td class="px-sm py-md">
-<div class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
-<span class="font-body-sm text-body-sm">Dépôt</span>
-</div>
-</td>
-<td class="px-sm py-md font-body-sm text-body-sm text-on-surface-variant">—</td>
-<td class="px-sm py-md text-right font-body-sm text-body-sm text-secondary">0 Ar</td>
-<td class="px-sm py-md text-right font-numeric-data text-body-lg text-[#2e7d32]">+ 50 000 Ar</td>
-</tr>
-<!-- Transaction Row 3 -->
-<tr class="transaction-row hover:bg-surface-container transition-colors">
-<td class="px-sm py-md">
-<div class="font-body-sm text-body-sm text-on-surface">08 Oct 2023</div>
-<div class="text-[12px] text-on-surface-variant">18:45</div>
-</td>
-<td class="px-sm py-md">
-<div class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">account_balance_wallet</span>
-<span class="font-body-sm text-body-sm">Retrait</span>
-</div>
-</td>
-<td class="px-sm py-md font-body-sm text-body-sm text-on-surface-variant">Point de vente #42</td>
-<td class="px-sm py-md text-right font-body-sm text-body-sm text-secondary">500 Ar</td>
-<td class="px-sm py-md text-right font-numeric-data text-body-lg text-error">- 20 000 Ar</td>
-</tr>
-<!-- Transaction Row 4 -->
-<tr class="transaction-row hover:bg-surface-container transition-colors">
-<td class="px-sm py-md">
-<div class="font-body-sm text-body-sm text-on-surface">05 Oct 2023</div>
-<div class="text-[12px] text-on-surface-variant">11:05</div>
-</td>
-<td class="px-sm py-md">
-<div class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">send</span>
-<span class="font-body-sm text-body-sm">Transfert</span>
-</div>
-</td>
-<td class="px-sm py-md font-numeric-data text-[16px] text-on-surface">032 11 222 33</td>
-<td class="px-sm py-md text-right font-body-sm text-body-sm text-secondary">100 Ar</td>
-<td class="px-sm py-md text-right font-numeric-data text-body-lg text-error">- 5 000 Ar</td>
-</tr>
-<!-- Transaction Row 5 -->
-<tr class="transaction-row hover:bg-surface-container transition-colors">
-<td class="px-sm py-md">
-<div class="font-body-sm text-body-sm text-on-surface">01 Oct 2023</div>
-<div class="text-[12px] text-on-surface-variant">08:00</div>
-</td>
-<td class="px-sm py-md">
-<div class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
-<span class="font-body-sm text-body-sm">Dépôt</span>
-</div>
-</td>
-<td class="px-sm py-md font-body-sm text-body-sm text-on-surface-variant">—</td>
-<td class="px-sm py-md text-right font-body-sm text-body-sm text-secondary">0 Ar</td>
-<td class="px-sm py-md text-right font-numeric-data text-body-lg text-[#2e7d32]">+ 150 000 Ar</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Pagination-like footer for the table -->
-<div class="px-md py-sm bg-surface-container-low flex justify-between items-center">
-<span class="font-body-sm text-body-sm text-on-surface-variant">Affichage 1-5 sur 42 opérations</span>
-<div class="flex gap-xs">
-<button class="p-xs rounded-lg hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-on-surface-variant">chevron_left</span>
-</button>
-<button class="p-xs rounded-lg bg-primary-container text-on-primary-container font-medium px-sm text-body-sm">1</button>
-<button class="p-xs rounded-lg hover:bg-surface-container-high transition-colors font-medium px-sm text-body-sm">2</button>
-<button class="p-xs rounded-lg hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Financial Summary Bento Grid for Context -->
-<div class="mt-xl grid grid-cols-1 md:grid-cols-3 gap-md">
-<div class="p-md bg-secondary-container rounded-xl flex flex-col gap-xs shadow-sm">
-<span class="material-symbols-outlined text-on-secondary-container">trending_up</span>
-<h3 class="font-title-md text-title-md text-on-secondary-container">Dépôts ce mois</h3>
-<p class="font-numeric-data text-headline-lg-mobile text-on-secondary-container">200 000 Ar</p>
-</div>
-<div class="p-md bg-surface-container-high rounded-xl flex flex-col gap-xs shadow-sm">
-<span class="material-symbols-outlined text-primary">trending_down</span>
-<h3 class="font-title-md text-title-md text-on-surface">Dépenses ce mois</h3>
-<p class="font-numeric-data text-headline-lg-mobile text-on-surface">40 850 Ar</p>
-</div>
-<div class="p-md bg-primary-container rounded-xl flex flex-col gap-xs shadow-sm">
-<span class="material-symbols-outlined text-on-primary-container">account_balance</span>
-<h3 class="font-title-md text-title-md text-on-primary-container">Solde Actuel</h3>
-<p class="font-numeric-data text-headline-lg-mobile text-on-primary-container">159 150 Ar</p>
-</div>
-</div>
-</main>
-<!-- BottomNavBar (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs pb-sm pt-base bg-surface shadow-md rounded-t-xl">
-<button class="flex flex-col items-center justify-center text-secondary transition-all active:scale-90">
-<span class="material-symbols-outlined">home</span>
-<span class="font-label-caps text-label-caps">Accueil</span>
-</button>
-<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-sm py-base transition-all active:scale-90">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
-<span class="font-label-caps text-label-caps">Transactions</span>
-</button>
-<button class="flex flex-col items-center justify-center text-secondary transition-all active:scale-90">
-<span class="material-symbols-outlined">grid_view</span>
-<span class="font-label-caps text-label-caps">Tarifs</span>
-</button>
-<button class="flex flex-col items-center justify-center text-secondary transition-all active:scale-90">
-<span class="material-symbols-outlined">person</span>
-<span class="font-label-caps text-label-caps">Profil</span>
-</button>
-</nav>
-<!-- Footer -->
-<footer class="w-full flex flex-col items-center py-md px-container-margin mb-xl border-t border-outline-variant bg-surface-container-low">
-<div class="font-title-md text-primary mb-sm">Aura Finance</div>
-<div class="flex gap-md mb-md">
-<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Sécurité</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Aide</a>
-<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Conditions</a>
-</div>
-<div class="font-body-sm text-body-sm text-secondary">© 2024 Aura Finance Madagascar.</div>
-</footer>
-<script>
-        // Simple micro-interaction for rows
-        document.querySelectorAll('.transaction-row').forEach(row => {
-            row.addEventListener('click', () => {
-                row.classList.add('scale-[0.99]');
-                setTimeout(() => row.classList.remove('scale-[0.99]'), 100);
+            <button onclick="filterTable('depot')" class="filter-btn px-md py-sm rounded-full bg-surface-container-high text-on-surface text-sm font-medium transition-all hover:bg-primary-container" data-filter="depot">
+                <span class="material-symbols-outlined text-sm align-middle">payments</span> Dépôts
+            </button>
+            <button onclick="filterTable('retrait')" class="filter-btn px-md py-sm rounded-full bg-surface-container-high text-on-surface text-sm font-medium transition-all hover:bg-primary-container" data-filter="retrait">
+                <span class="material-symbols-outlined text-sm align-middle">account_balance_wallet</span> Retraits
+            </button>
+            <button onclick="filterTable('transfert')" class="filter-btn px-md py-sm rounded-full bg-surface-container-high text-on-surface text-sm font-medium transition-all hover:bg-primary-container" data-filter="transfert">
+                <span class="material-symbols-outlined text-sm align-middle">send</span> Transferts
+            </button>
+        </div>
+
+        <!-- Tableau Dynamique -->
+        <div class="bg-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="history-table">
+                    <thead>
+                        <tr class="bg-primary text-on-primary">
+                            <th class="px-sm py-md font-label-caps uppercase text-xs tracking-wider">Date & Heure</th>
+                            <th class="px-sm py-md font-label-caps uppercase text-xs tracking-wider">Type</th>
+                            <th class="px-sm py-md font-label-caps uppercase text-xs tracking-wider text-right">Montant</th>
+                            <th class="px-sm py-md font-label-caps uppercase text-xs tracking-wider text-right hidden sm:table-cell">Frais</th>
+                            <th class="px-sm py-md font-label-caps uppercase text-xs tracking-wider text-right hidden md:table-cell">Total</th>
+                            <th class="px-sm py-md font-label-caps uppercase text-xs tracking-wider text-right hidden lg:table-cell">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant" id="table-body">
+                        <?php if (!empty($transactions)): ?>
+                            <?php
+                            $clientId = session()->get('client')['id'];
+                            foreach ($transactions as $op):
+                                $isDepot = ($op['libelle'] == 'depot');
+                                $isRetrait = ($op['libelle'] == 'retrait');
+                                $isTransfert = ($op['libelle'] == 'transfert');
+
+                                $estExpediteur = ($op['id_client1'] == $clientId);
+                                $estReceveur = ($op['id_client2'] == $clientId);
+
+                                if ($isTransfert && $estReceveur) {
+                                    $isCredit = true;
+                                } elseif ($isTransfert && $estExpediteur) {
+                                    $isCredit = false;
+                                } else {
+                                    $isCredit = $isDepot;
+                                }
+
+                                $rowClass = $isCredit ? 'bg-green-50/30' : 'bg-red-50/30';
+                                $textColor = $isCredit ? 'text-green-700' : 'text-red-600';
+                                $signe = $isCredit ? '+' : '-';
+                                $montantAffiche = $op['montant'];
+                                // Le coût total de l'opération = frais applique + commission externe (si transfert vers un autre operateur)
+                                $frais = ($op['frais_applique'] ?? 0) + ($op['commission_externe'] ?? 0);
+                                $totalOperation = $isCredit ? $montantAffiche : ($montantAffiche + $frais);
+
+                                // Déterminer l'icône et la couleur
+                                if ($isDepot) {
+                                    $icon = 'payments';
+                                    $iconColor = 'text-green-700';
+                                    $labelColor = 'text-green-800';
+                                } elseif ($isRetrait) {
+                                    $icon = 'account_balance_wallet';
+                                    $iconColor = 'text-red-600';
+                                    $labelColor = 'text-red-800';
+                                } elseif ($isTransfert && $estReceveur) {
+                                    $icon = 'download';
+                                    $iconColor = 'text-green-600';
+                                    $labelColor = 'text-green-800';
+                                    $libelleAffiche = 'réception';
+                                } else {
+                                    $icon = 'send';
+                                    $iconColor = 'text-blue-600';
+                                    $labelColor = 'text-blue-800';
+                                    $libelleAffiche = 'transfert';
+                                }
+
+                                $libelleAffiche = $isTransfert && $estReceveur ? 'réception' : $op['libelle'];
+                            ?>
+                                <tr class="transaction-enter hover:bg-surface-container transition-colors <?= $rowClass ?>" data-type="<?= esc($op['libelle']) ?>">
+                                    <td class="px-sm py-md">
+                                        <div class="font-body-sm font-medium"><?= date('d/m/Y', strtotime($op['date_operation'])) ?></div>
+                                        <div class="text-[11px] text-on-surface-variant"><?= date('H:i', strtotime($op['date_operation'])) ?></div>
+                                    </td>
+                                    <td class="px-sm py-md">
+                                        <div class="flex items-center gap-xs">
+                                            <span class="material-symbols-outlined text-sm <?= $iconColor ?>">
+                                                <?= $icon ?>
+                                            </span>
+                                            <span class="font-body-sm capitalize font-medium <?= $labelColor ?>">
+                                                <?= esc($libelleAffiche) ?>
+                                            </span>
+                                            <!-- Badge de frais (inclut la commission externe) : affiché uniquement pour les transferts envoyés avec cout -->
+                                            <?php if ($frais > 0 && $isTransfert && $estExpediteur): ?>
+                                                <span class="frais-badge bg-orange-100 text-orange-800 ml-xs">
+                                                    +<?= number_format($frais, 0, ',', '.') ?> Ar
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-sm py-md text-right font-bold <?= $textColor ?>">
+                                        <?= $signe ?>
+                                        <?= number_format($montantAffiche, 0, ',', '.') ?> Ar
+                                    </td>
+                                    <td class="px-sm py-md text-right text-sm text-orange-600 font-medium hidden sm:table-cell">
+                                        <?php if ($frais > 0): ?>
+                                            <?= number_format($frais, 0, ',', '.') ?> Ar
+                                        <?php else: ?>
+                                            <span class="text-on-surface-variant/50">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="px-sm py-md text-right font-bold hidden md:table-cell <?= $isCredit ? 'text-green-700' : 'text-red-600' ?>">
+                                        <?= $signe ?>
+                                        <?= number_format($totalOperation, 0, ',', '.') ?> Ar
+                                    </td>
+                                    <td class="px-sm py-md text-right text-sm text-on-surface-variant max-w-[200px] truncate relative group">
+                                        <?php if (!empty($op['description'])): ?>
+                                            <span class="cursor-help" title="<?= esc($op['description']) ?>">
+                                                <?= esc($op['description']) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            —
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="px-sm py-xl text-center text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-4xl block mb-sm opacity-50">history</span>
+                                    Aucune transaction trouvée.
+                                    <div class="text-sm mt-xs">Effectuez votre première opération dès maintenant.</div>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <?php if (!empty($transactions)): ?>
+                <div class="px-sm py-md border-t border-outline-variant flex justify-between items-center text-xs text-on-surface-variant">
+                    <span>Affichage de <strong><?= count($transactions) ?></strong> transaction<?= count($transactions) > 1 ? 's' : '' ?></span>
+                </div>
+            <?php endif; ?>
+        </div>
+    </main>
+
+    <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-xs pb-sm pt-base bg-surface shadow-md border-t border-outline-variant">
+        <a href="<?= base_url('client/home') ?>" class="flex flex-col items-center text-secondary hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+        </a>
+        <a href="<?= base_url('client/historique') ?>" class="flex flex-col items-center text-primary">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+            <span class="text-[10px] font-bold">Historique</span>
+        </a>
+    </nav>
+
+    <script>
+        function filterTable(type) {
+            const rows = document.querySelectorAll('#table-body tr');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-on-primary');
+                btn.classList.add('bg-surface-container-high', 'text-on-surface');
+                if (btn.dataset.filter === type) {
+                    btn.classList.remove('bg-surface-container-high', 'text-on-surface');
+                    btn.classList.add('bg-primary', 'text-on-primary');
+                }
+            });
+
+            if (type === 'all') {
+                rows.forEach(row => {
+                    row.style.display = '';
+                });
+                return;
+            }
+
+            rows.forEach(row => {
+                if (row.dataset.type === type) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.transaction-enter');
+            rows.forEach((row, index) => {
+                row.style.animationDelay = `${(index * 0.05)}s`;
             });
         });
     </script>
-</body></html>
+
+</body>
+
+</html>

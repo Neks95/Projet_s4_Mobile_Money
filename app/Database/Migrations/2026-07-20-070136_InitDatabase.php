@@ -27,5 +27,6 @@ class InitDatabase extends Migration
         $this->forge->dropTable('client', true);
         $this->forge->dropTable('prefixe', true);
         $this->forge->dropTable('operateur', true);
+        $this->forge->dropTable('conf_transfert',true);
     }
 }

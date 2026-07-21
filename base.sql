@@ -16,6 +16,7 @@ CREATE TABLE client(
     prenom TEXT,
     numero_telephone TEXT,
     id_prefixe INTEGER,
+    solde REAL,
     FOREIGN KEY (id_prefixe) REFERENCES prefixe(id)
 );
 
@@ -44,6 +45,7 @@ CREATE TABLE operation(
     FOREIGN KEY (id_client1) REFERENCES client(id),
     FOREIGN KEY (id_client2) REFERENCES client(id),
     FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
-
 );
+
+
 

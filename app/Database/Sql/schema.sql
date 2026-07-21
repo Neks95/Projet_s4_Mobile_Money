@@ -1,3 +1,4 @@
+
 CREATE TABLE operateur(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT
@@ -7,6 +8,7 @@ CREATE TABLE prefixe(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date_creation DATE,
     id_operateur INTEGER,
+    valeur TEXT,
     FOREIGN KEY (id_operateur) REFERENCES operateur(id)
 );
 
@@ -16,6 +18,7 @@ CREATE TABLE client(
     prenom TEXT,
     numero_telephone TEXT,
     id_prefixe INTEGER,
+    solde REAL,
     FOREIGN KEY (id_prefixe) REFERENCES prefixe(id)
 );
 
@@ -40,10 +43,31 @@ CREATE TABLE operation(
     id_type_operation INTEGER,
     date_operation TEXT,
     montant REAL,
-    frais_applique REAL ,
-    FOREIGN KEY (id_client1) REFERENCES client(id),
-    FOREIGN KEY (id_client2) REFERENCES client(id),
-    FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
+    frais_applique REAL,
+    commission_externe REAL DEFAULT 0,
+    description TEXT,
+FOREIGN KEY (id_client1) REFERENCES client(id),
+FOREIGN KEY (id_client2) REFERENCES client(id),
+FOREIGN KEY (id_type_operation) REFERENCES type_operation(id)
+);
 
+CREATE TABLE conf_transfert(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_operateur INTEGER,
+    comission REAL,
+    FOREIGN KEY (id_operateur) REFERENCES operateur(id)
+);
+
+CREATE TABLE promotion(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pourcentage REAL
+);
+
+CREATE TABLE epargne(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_client INTEGER ,
+    valeur REAL,
+    solde_epargne REAL,
+    FOREIGN KEY (id_client) REFERENCES client(id)
 );
 
