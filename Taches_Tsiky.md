@@ -46,3 +46,8 @@
     + Calcul du montant total transfere et de la commission due par operateur
 [X] Creation de la route `operateur/montants-operateurs`
 [X] Creation de la page d'affichage (`situation_operateurs.php`) avec KPIs et tableau par operateur
+
+## Alea
+[X] Creation de la table promotion pour les frais de transfert vers meme operateur
+[X] Creation de la methode clalculerPromotion dans CLientController
+[X] Appplication de la promotion dans les frais de transfert dans la methode `processTransfert`

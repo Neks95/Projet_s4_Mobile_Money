@@ -158,5 +158,9 @@ class AppSeeder extends Seeder
             'id_operateur' => $operateurIds['Orange'],
             'comission'   => 5.0
         ]);
+
+        $this->db->table('promotion')->insert([
+            'pourcentage' => 1.0
+        ]);
     }
 }

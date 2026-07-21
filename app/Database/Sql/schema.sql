@@ -58,3 +58,8 @@ CREATE TABLE conf_transfert(
     FOREIGN KEY (id_operateur) REFERENCES operateur(id)
 );
 
+CREATE TABLE promotion(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pourcentage REAL
+);
+

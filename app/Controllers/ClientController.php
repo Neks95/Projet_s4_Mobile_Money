@@ -230,10 +230,14 @@ class ClientController extends BaseController
         $montantParPersonne = $montantTotal / $nbDest;
 
         $fraisTransfert = $this->calculerFrais($montantTotal, 3);
+        $promo = $this->calculerPromotion($fraisTransfert);
 
         $fraisRetrait = 0;
-        if ($estToutInterne && $inclureFrais) {
-            $fraisRetrait = $this->calculerFrais($montantTotal, 2);
+        if ($estToutInterne) {
+            $fraisTransfert = $fraisTransfert - $promo;
+            if ($inclureFrais) {
+                $fraisRetrait = $this->calculerFrais($montantTotal, 2);
+            }
         }
 
         // Commission externe : dépend de l'opérateur destinataire (conf_transfert), calculée au moment
@@ -355,6 +359,15 @@ class ClientController extends BaseController
         $taux = $conf ? (float)$conf['comission'] : 0.0;
 
         return ($montant * $taux) / 100;
+    }
+
+    private function calculerPromotion(float $frais): float
+    {
+        $db = \Config\Database::connect();
+        $conf = $db->table('promotion')->get()->getRowArray();
+        $taux = $conf ? (float)$conf['pourcentage'] : 0.0;
+
+        return ($frais * $taux) / 100;
     }
 
     public function situationClients()
